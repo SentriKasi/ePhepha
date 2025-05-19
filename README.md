@@ -1,0 +1,2 @@
+# ePhepha
+ePhepha is a mobile-first learning platform revolutionzing how students prepare for nsc physics exams. Designed like social media but powered by science, ePhepha delivers bit-sized, high-impact lessons and interactive quizzes that feel more like a game than a grind. Whether  you're cramming or casually brushing up, ePhepha makes physics make sense-fast. Built in  Africa for Africa, and ready to scale to the world
