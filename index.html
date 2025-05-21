@@ -6,10 +6,31 @@
   <title>ePhepha - Matric Power</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-</head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+  <style>
+    .header-hidden {
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    header {
+      transition: transform 0.3s ease;
+    }
 
-  <header class="sticky top-0 bg-gradient-to-r from-blue-900 to-blue-600 text-white p-4 shadow-lg z-50">
+    .shimmer {
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% {background-position: -200% 0;}
+      100% {background-position: 200% 0;}
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <header id="main-header" class="sticky top-0 bg-[#196725] text-white p-4 shadow-lg z-50">
     <div class="flex justify-between items-center">
       <div>
         <h1 class="text-2xl font-bold flex items-center">🚀 ePhepha</h1>
@@ -17,7 +38,7 @@
       </div>
       <div class="flex items-center gap-4">
         <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
-          <div class="bg-yellow-500 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+          <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
             <i class="fas fa-fire"></i>
           </div>
           <div>
@@ -27,7 +48,7 @@
         </div>
         <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
           <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
-            <i class="fas fa-star"></i>
+            <i class="fas fa-brain"></i>
           </div>
           <div>
             <div class="text-xs opacity-80">Points</div>
@@ -38,132 +59,357 @@
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto px-4 mt-8 pb-24">
-    <!-- Progress circle -->
-    <div class="mb-8 flex justify-center">
-      <div class="relative h-32 w-32">
-        <svg class="h-full w-full" viewBox="0 0 36 36">
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E7EB" stroke-width="3" />
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#4338CA" stroke-width="3" stroke-dasharray="25, 100" />
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center flex-col">
-          <div class="text-3xl font-bold text-indigo-800">25%</div>
-          <div class="text-xs text-gray-500">Progress</div>
+  <main class="max-w-xl mx-auto px-4 mt-4 pb-24">
+    <!-- Welcome Banner -->
+    <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg mb-6">
+      <h2 class="text-xl font-bold mb-2">Awe fede! Welcome to ePhepha 🔥</h2>
+      <p class="text-sm opacity-90 mb-4">Your all-in-one platform for matric success, career guidance, and future planning.</p>
+      <div class="flex items-center bg-white bg-opacity-20 p-2 rounded-lg">
+        <i class="fas fa-search text-white opacity-70 mx-2"></i>
+        <input type="text" placeholder="Search for bursaries, tutors, or resources..." class="bg-transparent border-none text-white placeholder-white placeholder-opacity-70 w-full focus:outline-none text-sm">
+      </div>
+    </section>
+
+    <!-- Opportunities Highlight -->
+    <div class="bg-yellow-100 text-yellow-800 p-4 rounded-xl shadow-md flex items-center mb-6">
+      <div class="bg-yellow-200 rounded-full p-2 mr-3">
+        <i class="fas fa-lightbulb text-yellow-600"></i>
+      </div>
+      <div>
+        <p class="font-bold">New bursary alert!</p>
+        <p class="text-sm">NSFAS applications closing in 2 weeks. Don't miss out!</p>
+      </div>
+      <button class="ml-auto bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm">Apply</button>
+    </div>
+
+    <!-- Categories -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <a href="#" class="bg-blue-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-blue-700 transition">
+        <i class="fas fa-briefcase text-2xl mb-2"></i>
+        <span class="font-bold">Career Advice</span>
+      </a>
+      <a href="#" class="bg-purple-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-purple-700 transition">
+        <i class="fas fa-chalkboard-teacher text-2xl mb-2"></i>
+        <span class="font-bold">Find Tutors</span>
+      </a>
+      <a href="#" class="bg-green-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-green-700 transition">
+        <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+        <span class="font-bold">Bursaries</span>
+      </a>
+      <a href="#" class="bg-red-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-red-700 transition">
+        <i class="fas fa-video text-2xl mb-2"></i>
+        <span class="font-bold">Learning Videos</span>
+      </a>
+    </div>
+
+    <!-- Featured Career Post -->
+    <h2 class="text-lg font-bold mb-3 flex items-center">
+      <i class="fas fa-briefcase text-blue-600 mr-2"></i>Career Spotlight
+    </h2>
+    
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+      <div class="h-40 bg-blue-100 relative overflow-hidden">
+        <img src="/api/placeholder/600/240" alt="Engineering careers" class="w-full h-full object-cover"/>
+        <div class="absolute top-0 left-0 bg-blue-600 text-white px-3 py-1 rounded-br-lg font-bold text-sm">
+          HOT CAREER
+        </div>
+      </div>
+      <div class="p-4">
+        <h3 class="font-bold text-lg mb-1">Engineering: The Builders of Tomorrow</h3>
+        <p class="text-sm text-gray-600 mb-3">Discover how engineering shapes our world and the various paths you can take with your matric maths and science.</p>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-500 flex items-center"><i class="fas fa-clock mr-1"></i> Posted 2 days ago</span>
+          <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm">Read More</button>
         </div>
       </div>
     </div>
 
-    <section class="text-center mb-6 bg-white p-6 rounded-lg shadow-md">
-      <p class="text-xl font-semibold text-blue-800">Awe fede, ready to pass with power?</p>
-      <p class="mt-2 text-gray-600">Whether you're upgrading your Matric, studying for it, or just pushing to be better — this is for you. 📚💪</p>
-      <div class="flex justify-center mt-4">
-        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm">
-          <i class="fas fa-calendar-check mr-2"></i>Keep going to maintain your streak!
-        </div>
-      </div>
-    </section>
-
-    <h2 class="text-lg font-bold text-gray-700 mb-3 mt-8 flex items-center">
-      <i class="fas fa-book-open mr-2 text-blue-600"></i>Choose a subject to begin:
+    <!-- Tutors Near Me -->
+    <h2 class="text-lg font-bold mb-3 flex items-center">
+      <i class="fas fa-chalkboard-teacher text-purple-600 mr-2"></i>Tutors Near You
     </h2>
-
-    <nav class="flex flex-col gap-4">
-      <a href="physics.html" class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-4 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-200 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="bg-yellow-600 h-10 w-10 rounded-full flex items-center justify-center mr-3">
-            <i class="fas fa-bolt text-white"></i>
-          </div>
-          <span>⚡ Physics</span>
-        </div>
-        <div class="flex items-center">
-          <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">7/10</span>
-          <i class="fas fa-chevron-right"></i>
-        </div>
-      </a>
-      
-      <a href="math.html" class="bg-white text-gray-600 font-bold py-4 px-4 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition duration-200 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="bg-gray-300 h-10 w-10 rounded-full flex items-center justify-center mr-3">
-            <i class="fas fa-calculator text-gray-600"></i>
-          </div>
-          <span>➕ Mathematics</span>
-        </div>
-        <div class="flex items-center">
-          <span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full mr-2">Coming Soon</span>
-          <i class="fas fa-lock"></i>
-        </div>
-      </a>
-      
-      <a href="english.html" class="bg-white text-gray-600 font-bold py-4 px-4 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition duration-200 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="bg-gray-300 h-10 w-10 rounded-full flex items-center justify-center mr-3">
-            <i class="fas fa-book text-gray-600"></i>
-          </div>
-          <span>📖 English</span>
-        </div>
-        <div class="flex items-center">
-          <span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full mr-2">Coming Soon</span>
-          <i class="fas fa-lock"></i>
-        </div>
-      </a>
-    </nav>
-
-    <section class="text-center mt-10 bg-blue-50 p-6 rounded-lg shadow-md border border-blue-100">
-      <div class="text-lg font-semibold text-blue-800">You're one lesson away from your distinction!</div>
-      <div class="flex justify-center mt-4">
-        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm">
-          <i class="fas fa-trophy mr-2"></i>Let's pusha ePhepha 💥
-        </div>
-      </div>
-    </section>
     
-    <!-- Achievement panel -->
-    <section class="mt-8 bg-white p-4 rounded-lg shadow-md">
-      <h3 class="font-bold text-gray-700 mb-3">Recent Achievements</h3>
-      <div class="flex gap-3">
-        <div class="bg-blue-100 rounded-lg p-3 flex-1 text-center">
-          <div class="bg-blue-700 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-2">
-            <i class="fas fa-medal text-white text-xl"></i>
+    <div class="overflow-x-auto">
+      <div class="flex gap-4 pb-2 min-w-full">
+        <!-- Tutor 1 -->
+        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 bg-purple-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
+              <span class="text-xl font-bold text-purple-600">M</span>
+            </div>
+            <div>
+              <h3 class="font-bold">Ms. Mthembu</h3>
+              <div class="flex text-yellow-400 text-xs">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span class="text-gray-600 ml-1">(4.5)</span>
+              </div>
+            </div>
           </div>
-          <div class="text-xs text-gray-600">First Login</div>
+          <div class="text-xs text-gray-600 mb-2">
+            <div><i class="fas fa-graduation-cap text-purple-500 mr-1"></i> Mathematics & Physics</div>
+            <div><i class="fas fa-map-marker-alt text-purple-500 mr-1"></i> Witbank (3km away)</div>
+          </div>
+          <button class="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-lg py-2 text-sm">Book Session</button>
         </div>
-        <div class="bg-green-100 rounded-lg p-3 flex-1 text-center">
-          <div class="bg-green-700 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-2">
-            <i class="fas fa-brain text-white text-xl"></i>
+        
+        <!-- Tutor 2 -->
+        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 bg-green-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
+              <span class="text-xl font-bold text-green-600">T</span>
+            </div>
+            <div>
+              <h3 class="font-bold">Mr. Tlou</h3>
+              <div class="flex text-yellow-400 text-xs">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <span class="text-gray-600 ml-1">(5.0)</span>
+              </div>
+            </div>
           </div>
-          <div class="text-xs text-gray-600">5 Lessons</div>
+          <div class="text-xs text-gray-600 mb-2">
+            <div><i class="fas fa-graduation-cap text-green-500 mr-1"></i> English & History</div>
+            <div><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> Middelburg (10km away)</div>
+          </div>
+          <button class="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 text-sm">Book Session</button>
         </div>
-        <div class="bg-purple-100 rounded-lg p-3 flex-1 text-center">
-          <div class="bg-purple-700 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-2">
-            <i class="fas fa-fire text-white text-xl"></i>
+        
+        <!-- Tutor 3 -->
+        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 bg-blue-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
+              <span class="text-xl font-bold text-blue-600">Z</span>
+            </div>
+            <div>
+              <h3 class="font-bold">Ms. Zuma</h3>
+              <div class="flex text-yellow-400 text-xs">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+                <span class="text-gray-600 ml-1">(4.0)</span>
+              </div>
+            </div>
           </div>
-          <div class="text-xs text-gray-600">7 Day Streak</div>
+          <div class="text-xs text-gray-600 mb-2">
+            <div><i class="fas fa-graduation-cap text-blue-500 mr-1"></i> Life Sciences & Geography</div>
+            <div><i class="fas fa-map-marker-alt text-blue-500 mr-1"></i> Online Only</div>
+          </div>
+          <button class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm">Book Session</button>
         </div>
       </div>
-    </section>
+    </div>
+    
+    <div class="text-center my-3">
+      <a href="#" class="text-purple-600 font-semibold text-sm inline-flex items-center">
+        View all tutors near you <i class="fas fa-chevron-right ml-1 text-xs"></i>
+      </a>
+    </div>
+
+    <!-- Featured Video Lessons -->
+    <h2 class="text-lg font-bold mb-3 flex items-center mt-6">
+      <i class="fas fa-video text-red-600 mr-2"></i>Featured Video Lessons
+    </h2>
+    
+    <div class="overflow-x-auto">
+      <div class="flex gap-4 pb-2">
+        <!-- Video 1 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
+          <div class="h-28 bg-gray-200 relative">
+            <img src="/api/placeholder/300/200" alt="Physics Concept" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
+                <i class="fas fa-play text-white"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
+              5:42
+            </div>
+          </div>
+          <div class="p-3">
+            <h3 class="font-bold text-sm">Newton's Laws Simplified</h3>
+            <p class="text-xs text-gray-500">Physics • 2.5k views</p>
+          </div>
+        </div>
+        
+        <!-- Video 2 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
+          <div class="h-28 bg-gray-200 relative">
+            <img src="/api/placeholder/300/200" alt="Maths Concept" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
+                <i class="fas fa-play text-white"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
+              8:17
+            </div>
+          </div>
+          <div class="p-3">
+            <h3 class="font-bold text-sm">Trigonometry Made Easy</h3>
+            <p class="text-xs text-gray-500">Mathematics • 3.8k views</p>
+          </div>
+        </div>
+        
+        <!-- Video 3 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
+          <div class="h-28 bg-gray-200 relative">
+            <img src="/api/placeholder/300/200" alt="Biology Concept" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
+                <i class="fas fa-play text-white"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
+              6:55
+            </div>
+          </div>
+          <div class="p-3">
+            <h3 class="font-bold text-sm">Cell Division Explained</h3>
+            <p class="text-xs text-gray-500">Life Sciences • 1.9k views</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center my-3">
+      <a href="#" class="text-red-600 font-semibold text-sm inline-flex items-center">
+        Browse all video lessons <i class="fas fa-chevron-right ml-1 text-xs"></i>
+      </a>
+    </div>
+
+    <!-- Bursaries & Opportunities -->
+    <h2 class="text-lg font-bold mb-3 flex items-center mt-6">
+      <i class="fas fa-graduation-cap text-green-600 mr-2"></i>Bursaries & Opportunities
+    </h2>
+    
+    <div class="space-y-3">
+      <!-- Bursary 1 -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <div class="flex justify-between items-start">
+          <div class="flex items-start">
+            <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-university text-green-600 text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-bold">NSFAS Bursary 2025</h3>
+              <p class="text-xs text-gray-500">Government • Closing: 30 June 2025</p>
+            </div>
+          </div>
+          <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full font-bold">Urgent</span>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">Financial assistance for tertiary education covering tuition, accommodation, books and living allowance.</p>
+        <div class="flex mt-3 gap-2">
+          <button class="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 text-sm">Apply Now</button>
+          <button class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center">
+            <i class="fas fa-bookmark text-gray-600"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Bursary 2 -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <div class="flex justify-between items-start">
+          <div class="flex items-start">
+            <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+              <i class="fas fa-building text-blue-600 text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-bold">Sasol Technical Bursary</h3>
+              <p class="text-xs text-gray-500">Corporate • Closing: 15 July 2025</p>
+            </div>
+          </div>
+          <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full font-bold">New</span>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">Full bursary for engineering and science students with strong maths and physical science marks.</p>
+        <div class="flex mt-3 gap-2">
+          <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm">Apply Now</button>
+          <button class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center">
+            <i class="fas fa-bookmark text-gray-600"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center my-3">
+      <a href="#" class="text-green-600 font-semibold text-sm inline-flex items-center">
+        View all bursaries <i class="fas fa-chevron-right ml-1 text-xs"></i>
+      </a>
+    </div>
+
+    <!-- Career Fair -->
+    <div class="mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-5 rounded-xl shadow-lg">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="font-bold text-lg">Virtual Career Fair 2025</h3>
+          <p class="text-sm opacity-80 mt-1">Meet 50+ companies and universities online.</p>
+          <div class="flex items-center mt-3">
+            <i class="fas fa-calendar-alt mr-1"></i>
+            <span class="text-sm">June 15-18, 2025</span>
+          </div>
+        </div>
+        <div class="shimmer bg-white bg-opacity-20 px-3 py-1 rounded-full font-bold">
+          Free Entry
+        </div>
+      </div>
+      <button class="w-full bg-white text-purple-600 font-bold rounded-lg py-2 mt-4 hover:bg-opacity-90">Register Now</button>
+    </div>
+
   </main>
 
-  <footer class="fixed bottom-0 left-0 w-full bg-blue-900 text-white flex justify-around p-3 text-xl z-50 shadow-lg">
-    <a href="index.html" class="flex flex-col items-center bg-blue-700 p-2 rounded-full text-white hover:bg-blue-600 transition-colors">
-      <i class="fas fa-home"></i>
+  <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
+    <a href="index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-hamburger" style="color:rgb(181, 16, 181);"></i>
       <span class="text-xs">Home</span>
     </a>
-    <a href="../pages/league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-trophy"></i>
+    <a href="league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-trophy" style="color: #f44336;"></i>
       <span class="text-xs">League</span>
     </a>
-    <a href="#" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-bolt"></i>
+    <a href="practice.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bolt" style="color: #FFEB3B;"></i>
       <span class="text-xs">Practice</span>
     </a>
-    <a href="../pages/profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-user"></i>
+    <a href="profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-user" style="color: #f44336;"></i>
       <span class="text-xs">Profile</span>
     </a>
-    <a href="#" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-cog"></i>
-      <span class="text-xs">Settings</span>
+    <a href="feed.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bell" style="color:#FFEB3B;"></i>
+      <span class="text-xs">Feed</span>
     </a>
   </footer>
+
+  <script>
+    // Script to hide header on scroll down and show on scroll up
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.getElementById('main-header');
+      let lastScrollTop = 0;
+      
+      window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Determine scroll direction
+        if (scrollTop > lastScrollTop && scrollTop > 50) {
+          // Scrolling down
+          header.classList.add('header-hidden');
+        } else {
+          // Scrolling up
+          header.classList.remove('header-hidden');
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For mobile or negative scrolling
+      }, false);
+    });
+  </script>
+
 </body>
 </html>

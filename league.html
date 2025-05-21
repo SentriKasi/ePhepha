@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ePhepha - Learner League</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <style>
+    .header-scroll {
+      transition: transform 0.3s ease-in-out;
+    }
+    .header-hidden {
+      transform: translateY(-100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <header id="siteHeader" class="sticky top-0 bg-[#196725] text-white p-4 shadow-lg z-50 header-scroll">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center">🚀 ePhepha</h1>
+        <p class="text-sm opacity-80">Matric Power — Uplift your grades</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+          <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div>
+            <div class="text-xs opacity-80">Streak</div>
+            <div class="font-bold">7 days</div>
+          </div>
+        </div>
+        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+          <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div>
+            <div class="text-xs opacity-80">Points</div>
+            <div class="font-bold">1,250</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4 mt-4 pb-24">
+    <!-- League Selection Tabs -->
+    <div class="flex mb-4 overflow-x-auto gap-2 py-2">
+      <button class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold flex-shrink-0 flex items-center">
+        <i class="fas fa-school mr-2"></i>School
+      </button>
+      <button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-bold flex-shrink-0 flex items-center">
+        <i class="fas fa-lock mr-2"></i>Regional
+      </button>
+      <button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-bold flex-shrink-0 flex items-center">
+        <i class="fas fa-lock mr-2"></i>Provincial
+      </button>
+      <button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-bold flex-shrink-0 flex items-center">
+        <i class="fas fa-lock mr-2"></i>National
+      </button>
+      <button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-bold flex-shrink-0 flex items-center">
+        <i class="fas fa-lock mr-2"></i>McDonalds
+      </button>
+    </div>
+
+    <!-- Current League Status -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+      <div class="flex justify-center mb-4">
+        <div class="flex space-x-2">
+          <div class="w-12 h-12 bg-red-400 rounded-lg transform rotate-12"></div>
+          <div class="w-12 h-12 bg-green-400 rounded-lg transform -rotate-6"></div>
+          <div class="w-16 h-16 bg-purple-400 rounded-xl flex items-center justify-center">
+            <i class="fas fa-feather text-purple-800 text-2xl"></i>
+          </div>
+          <div class="w-12 h-12 bg-gray-200 rounded-lg transform rotate-6"></div>
+          <div class="w-12 h-12 bg-gray-200 rounded-lg transform -rotate-12"></div>
+        </div>
+      </div>
+      
+      <h2 class="text-2xl font-bold text-center text-gray-800">Witbank High League</h2>
+      <p class="text-center text-gray-600 mb-2">Top 5 advance to Nkangala District League</p>
+      
+      <div class="bg-yellow-100 text-yellow-800 rounded-lg p-3 flex justify-between items-center">
+        <span class="font-bold">Time remaining:</span>
+        <span class="text-lg font-bold">5 days</span>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- Position 1 -->
+      <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-yellow-50 to-yellow-100">
+        <div class="flex items-center">
+          <div class="bg-yellow-400 text-yellow-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            1
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">T</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Thabo Mashaba</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-bolt text-yellow-500 mr-1"></i>Physics
+              <i class="fas fa-microscope text-green-500 mx-1"></i>Life Sciences
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">785 XP</div>
+      </div>
+
+      <!-- Position 2 -->
+      <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100">
+        <div class="flex items-center">
+          <div class="bg-gray-300 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            2
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">N</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Nomzamo Ndlovu</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-book text-blue-500 mr-1"></i>English
+              <i class="fas fa-infinity text-purple-500 mx-1"></i>Mathematics
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">672 XP</div>
+      </div>
+
+      <!-- Position 3 -->
+      <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-amber-50 to-amber-100">
+        <div class="flex items-center">
+          <div class="bg-amber-600 text-amber-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            3
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">Z</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-red-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Zweli Khumalo</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-bolt text-yellow-500 mr-1"></i>Physics
+              <i class="fas fa-chart-line text-blue-500 mx-1"></i>Mathematical Literacy
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">541 XP</div>
+      </div>
+
+      <!-- Position 4 -->
+      <div class="p-4 border-b flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="bg-gray-200 text-gray-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            4
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">L</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Lesedi Molefe</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-microscope text-green-500 mr-1"></i>Life Sciences
+              <i class="fas fa-book text-blue-500 mx-1"></i>English
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">489 XP</div>
+      </div>
+
+      <!-- Position 5 -->
+      <div class="p-4 border-b flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="bg-gray-200 text-gray-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            5
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">T</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-yellow-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Thandeka Sibiya</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-infinity text-purple-500 mr-1"></i>Mathematics
+              <i class="fas fa-bolt text-yellow-500 mx-1"></i>Physics
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">422 XP</div>
+      </div>
+
+      <!-- Current User Position -->
+      <div class="p-4 border-b flex items-center justify-between bg-blue-50">
+        <div class="flex items-center">
+          <div class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            7
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-blue-300 rounded-full overflow-hidden border-2 border-blue-500">
+              <div class="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                YOU
+              </div>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">You</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-bolt text-yellow-500 mr-1"></i>Physics
+              <i class="fas fa-microscope text-green-500 mx-1"></i>Life Sciences
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">385 XP</div>
+      </div>
+
+      <!-- Position 8 -->
+      <div class="p-4 border-b flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="bg-gray-200 text-gray-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-3">
+            8
+          </div>
+          <div class="relative">
+            <div class="w-12 h-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+              <span class="text-2xl font-bold text-gray-600">S</span>
+            </div>
+            <div class="absolute -top-1 -right-1 bg-red-500 w-4 h-4 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="ml-3">
+            <div class="font-bold">Sipho Nkosi</div>
+            <div class="text-xs text-gray-500 flex items-center">
+              <i class="fas fa-chart-line text-blue-500 mr-1"></i>Mathematical Literacy
+              <i class="fas fa-book text-blue-500 mx-1"></i>English
+            </div>
+          </div>
+        </div>
+        <div class="text-xl font-bold">354 XP</div>
+      </div>
+
+    </div>
+
+    <!-- Advancement Info -->
+    <div class="mt-6 bg-blue-50 p-4 rounded-lg shadow border border-blue-100">
+      <h3 class="font-bold text-blue-800 mb-2">Advancement Info</h3>
+      <div class="text-sm text-gray-700">
+        <p class="mb-2"><i class="fas fa-trophy text-yellow-500 mr-1"></i> <strong>School League:</strong> Top 5 advance to Regional (Nkangala District)</p>
+        <p class="mb-2"><i class="fas fa-lock text-gray-500 mr-1"></i> <strong>Regional League:</strong> Top 5 advance to Provincial (Mpumalanga)</p>
+        <p class="mb-2"><i class="fas fa-lock text-gray-500 mr-1"></i> <strong>Provincial League:</strong> Top 5 advance to National</p>
+        <p class="mb-2"><i class="fas fa-lock text-gray-500 mr-1"></i> <strong>National League:</strong> Top 5 advance to McDonald's League</p>
+        <p><i class="fas fa-hamburger text-yellow-600 mr-1"></i> <strong>McDonald's League:</strong> Winners receive McDonald's meals!</p>
+      </div>
+    </div>
+
+    <!-- Motivation -->
+    <section class="text-center mt-6 bg-gradient-to-r from-yellow-50 to-yellow-100 p-6 rounded-lg shadow-md border border-yellow-200">
+      <div class="text-lg font-semibold text-yellow-800">You need just <span class="text-xl font-bold text-red-600">37 XP</span> to reach Top 5!</div>
+      <div class="flex justify-center mt-4">
+        <div class="bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full text-sm">
+          <i class="fas fa-lightbulb mr-2"></i>Complete today's Physics lesson to earn 50 XP
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
+    <a href="index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-hamburger" style="color:rgb(181, 16, 181);"></i>
+      <span class="text-xs">Home</span>
+    </a>
+    <a href="league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-trophy" style="color: #f44336;"></i>
+      <span class="text-xs">League</span>
+    </a>
+    <a href="practice.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bolt" style="color: #FFEB3B;"></i>
+      <span class="text-xs">Practice</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-user" style="color: #f44336;"></i>
+      <span class="text-xs">Profile</span>
+    </a>
+    <a href="feed.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bell" style="color:#FFEB3B;"></i>
+      <span class="text-xs">Feed</span>
+    </a>
+  </footer>
+
+  <script>
+    // JavaScript to hide/show header on scroll
+    let lastScrollTop = 0;
+    const header = document.getElementById('siteHeader');
+    
+    // Listen for scroll events
+    window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // If scrolling down and past a minimum threshold (e.g., 50px)
+      if (scrollTop > lastScrollTop && scrollTop > 50) {
+        // Scrolling down - hide header
+        header.classList.add('header-hidden');
+      } else {
+        // Scrolling up - show header
+        header.classList.remove('header-hidden');
+      }
+      
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+    }, false);
+  </script>
+</body>
+</html>

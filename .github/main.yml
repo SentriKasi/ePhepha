@@ -1,0 +1,15 @@
+
+## How to Run
+Open `index.html` in a modern browser to start. The app handles routing internally and loads the appropriate lessons and components.
+
+## Testing
+Run `node js/testcases.js` in the terminal to execute unit tests for motivation, physics, and main app modules.
+
+## Contributing
+Pull requests and issues are welcome. Follow the existing coding style and add tests for new features.
+
+## License
+Apache License.
+
+---
+
