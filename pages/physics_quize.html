@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 1: Mechanics Quiz - ePhepha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        displayAlign: "left"
+      });
+    </script>
+    <style>
+      .drag-item {
+        cursor: grab;
+        user-select: none;
+      }
+      .drag-item:active {
+        cursor: grabbing;
+      }
+      .drop-target {
+        min-height: 40px;
+        border: 2px dashed #ccc;
+      }
+      .drop-target.active {
+        border-color: #4299e1;
+        background-color: rgba(66, 153, 225, 0.1);
+      }
+      .formula-blank {
+        display: inline-block;
+        width: 60px;
+        height: 35px;
+        border: 2px dashed #4299e1;
+        border-radius: 4px;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 35px;
+      }
+      .option-button {
+        transition: all 0.2s;
+      }
+      .option-button:active {
+        transform: scale(0.95);
+      }
+      .quiz-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800 font-sans">
+    <!-- Quiz Container -->
+    <div class="quiz-container p-6">
+      <!-- Pre-Quiz Screen -->
+      <div id="quiz-intro" class="bg-white rounded-xl shadow-md p-6 text-center">
+        <div class="mb-6">
+          <span class="inline-block bg-blue-800 text-white h-16 w-16 rounded-full flex items-center justify-center font-bold text-2xl">⚡</span>
+        </div>
+        <h1 class="text-3xl font-bold text-blue-800 mb-4">Unit 1: Mechanics Quiz</h1>
+        <p class="text-lg mb-6">Test your knowledge on vectors, forces, and Newton's laws!</p>
+        
+        <div class="bg-blue-50 p-4 rounded-lg mb-6 text-left">
+          <h2 class="font-bold text-lg mb-2">Quiz Instructions:</h2>
+          <ul class="list-disc list-inside space-y-2">
+            <li>This quiz contains 9 interactive questions</li>
+            <li>Answer each question to proceed to the next one</li>
+            <li>Some questions involve dragging and dropping items</li>
+            <li>Others require selecting the correct option</li>
+            <li>Try to answer all questions correctly</li>
+          </ul>
+        </div>
+        
+        <button id="start-quiz-btn" class="bg-green-600 text-white rounded-lg px-10 py-4 text-xl font-bold hover:bg-green-700 transition-colors">
+          Start Quiz
+        </button>
+      </div>
+      
+      <!-- Question Template -->
+      <div id="question-container" class="hidden">
+        <!-- Progress Bar -->
+        <div class="mb-6">
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Question <span id="current-question">1</span> of 9</span>
+            <span id="progress-percentage">11%</span>
+          </div>
+          <div class="bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div id="progress-bar" class="bg-blue-600 h-full rounded-full" style="width: 11%"></div>
+          </div>
+        </div>
+        
+        <!-- Question Content -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div class="question hidden" id="q1">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 1: Vector vs Scalar</h2>
+            <p class="mb-4">Drag each quantity to either the "Vector" or "Scalar" category:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 class="font-bold mb-2 text-center bg-blue-100 p-2 rounded">Quantities</h3>
+                <div class="flex flex-wrap justify-center gap-2" id="drag-items">
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="scalar">Mass</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="vector">Velocity</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="scalar">Temperature</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="vector">Acceleration</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="vector">Displacement</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="scalar">Time</div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="mb-4">
+                  <h3 class="font-bold mb-2 text-center bg-green-100 p-2 rounded">Vector Quantities</h3>
+                  <div class="drop-target" id="vector-drop" data-accepts="vector"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-2 text-center bg-purple-100 p-2 rounded">Scalar Quantities</h3>
+                  <div class="drop-target" id="scalar-drop" data-accepts="scalar"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q2">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 2: Newton's Second Law</h2>
+            <p class="mb-4">Complete the formula by selecting the correct missing term:</p>
+            
+            <div class="bg-blue-50 p-4 rounded-lg text-center text-xl mb-6">
+              <p>$\vec{F} = m \times$ <span id="formula-blank" class="formula-blank">?</span></p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="v" data-correct="false">
+                $\vec{v}$ (velocity)
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="a" data-correct="true">
+                $\vec{a}$ (acceleration)
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="d" data-correct="false">
+                $\vec{d}$ (displacement)
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="p" data-correct="false">
+                $\vec{p}$ (momentum)
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="w" data-correct="false">
+                $\vec{w}$ (weight)
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="j" data-correct="false">
+                $J$ (joule)
+              </button>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q3">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 3: Forces and Units</h2>
+            <p class="mb-4">What is the SI unit of force?</p>
+            
+            <div class="space-y-3">
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                Joule (J)
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                Watt (W)
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="true">
+                Newton (N)
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                Pascal (Pa)
+              </button>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q4">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 4: Vector Components</h2>
+            <p class="mb-4">Match each component formula with its correct description:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 class="font-bold mb-2 text-center bg-blue-100 p-2 rounded">Formula</h3>
+                <div class="flex flex-col gap-2" id="formula-items">
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="x-component">
+                    $F_x = F\cos\theta$
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="y-component">
+                    $F_y = F\sin\theta$
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="magnitude">
+                    $|\vec{F}| = \sqrt{F_x^2 + F_y^2}$
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="angle">
+                    $\theta = \tan^{-1}(F_y/F_x)$
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex flex-col gap-3">
+                <div>
+                  <h3 class="font-bold mb-1">X-component of vector</h3>
+                  <div class="drop-target" id="x-component-drop" data-accepts="x-component"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Y-component of vector</h3>
+                  <div class="drop-target" id="y-component-drop" data-accepts="y-component"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Magnitude from components</h3>
+                  <div class="drop-target" id="magnitude-drop" data-accepts="magnitude"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Direction angle from components</h3>
+                  <div class="drop-target" id="angle-drop" data-accepts="angle"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q5">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 5: Newton's First Law</h2>
+            <p class="mb-4">Which statement correctly describes Newton's First Law?</p>
+            
+            <div class="space-y-3">
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                Force equals mass times acceleration
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="true">
+                An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction unless acted upon by an unbalanced force
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                For every action, there is an equal and opposite reaction
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                Energy can neither be created nor destroyed, only transformed
+              </button>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q6">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 6: Types of Forces</h2>
+            <p class="mb-4">Match each force with its correct description:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 class="font-bold mb-2 text-center bg-blue-100 p-2 rounded">Forces</h3>
+                <div class="flex flex-col gap-2" id="force-items">
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="gravity">
+                    Gravitational Force
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="normal">
+                    Normal Force
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="friction">
+                    Friction Force
+                  </div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-match="tension">
+                    Tension Force
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex flex-col gap-3">
+                <div>
+                  <h3 class="font-bold mb-1">Attractive force between objects with mass</h3>
+                  <div class="drop-target" id="gravity-drop" data-accepts="gravity"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Perpendicular force exerted by a surface</h3>
+                  <div class="drop-target" id="normal-drop" data-accepts="normal"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Force that opposes motion between surfaces</h3>
+                  <div class="drop-target" id="friction-drop" data-accepts="friction"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-1">Force transmitted through a string or cable</h3>
+                  <div class="drop-target" id="tension-drop" data-accepts="tension"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q7">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 7: Newton's Third Law</h2>
+            <p class="mb-4">Complete Newton's Third Law formula:</p>
+            
+            <div class="bg-blue-50 p-4 rounded-lg text-center text-xl mb-6">
+              <p>$\vec{F}_{A\text{ on }B} = $ <span id="third-law-blank" class="formula-blank">?</span> $\vec{F}_{B\text{ on }A}$</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="positive" data-correct="false">
+                $+$
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="negative" data-correct="true">
+                $-$
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="times" data-correct="false">
+                $\times$
+              </button>
+              <button class="option-button bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50" data-value="divide" data-correct="false">
+                $\div$
+              </button>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q8">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 8: Mass vs. Weight</h2>
+            <p class="mb-4">Drag each characteristic to either "Mass" or "Weight":</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 class="font-bold mb-2 text-center bg-blue-100 p-2 rounded">Characteristics</h3>
+                <div class="flex flex-wrap justify-center gap-2" id="mass-weight-items">
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="mass">Measured in kilograms</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="weight">Measured in newtons</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="mass">Scalar quantity</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="weight">Vector quantity</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="mass">Constant value anywhere</div>
+                  <div class="drag-item bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-300" data-type="weight">Changes with gravitational field</div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="mb-4">
+                  <h3 class="font-bold mb-2 text-center bg-green-100 p-2 rounded">Mass</h3>
+                  <div class="drop-target" id="mass-drop" data-accepts="mass"></div>
+                </div>
+                
+                <div>
+                  <h3 class="font-bold mb-2 text-center bg-purple-100 p-2 rounded">Weight</h3>
+                  <div class="drop-target" id="weight-drop" data-accepts="weight"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="question hidden" id="q9">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Question 9: Weight Formula</h2>
+            <p class="mb-4">Select the correct formula for calculating weight:</p>
+            
+            <div class="space-y-3">
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                $W = m + g$
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                $W = \frac{m}{g}$
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="true">
+                $W = m \cdot g$
+              </button>
+              <button class="option-button w-full text-left bg-white border border-blue-300 rounded-lg p-4 hover:bg-blue-50" data-correct="false">
+                $W = g - m$
+              </button>
+            </div>
+          </div>
+          
+          <!-- Feedback - Correct Answer -->
+          <div id="correct-feedback" class="hidden bg-green-100 border-l-4 border-green-500 p-4 my-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-500 text-xl"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-green-700 font-medium">Correct! Well done.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Feedback - Wrong Answer -->
+          <div id="wrong-feedback" class="hidden bg-red-100 border-l-4 border-red-500 p-4 my-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-times-circle text-red-500 text-xl"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-red-700 font-medium">Incorrect. Try again!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between">
+          <button id="prev-btn" class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg flex items-center gap-2 hover:bg-gray-400 transition-colors">
+            <i class="fas fa-arrow-left"></i>
+            <span>Previous</span>
+          </button>
+          
+          <button id="next-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors" disabled>
+            <span>Next</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Results Screen -->
+      <div id="quiz-results" class="hidden bg-white rounded-xl shadow-md p-6 text-center">
+        <div class="mb-6">
+          <span class="inline-block bg-green-500 text-white h-16 w-16 rounded-full flex items-center justify-center font-bold text-2xl">
+            <i class="fas fa-trophy"></i>
+          </span>
+        </div>
+        <h1 class="text-3xl font-bold text-green-600 mb-4">Quiz Completed!</h1>
+        <p class="text-lg mb-2">You scored:</p>
+        <p class="text-5xl font-bold mb-6"><span id="final-score">0</span> / 9</p>
+        
+        <div id="motivation-message" class="bg-blue-50 p-4 rounded-lg mb-6 text-left">
+          <!-- Random motivation message will be inserted here -->
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button id="retry-quiz-btn" class="flex-1 bg-blue-600 text-white rounded-lg px-8 py-3 font-bold hover:bg-blue-700 transition-colors">
+            Retry Quiz
+          </button>
+          <a href="physics_unit1.html" class="flex-1 bg-green-600 text-white rounded-lg px-8 py-3 font-bold hover:bg-green-700 transition-colors flex items-center justify-center">
+            Return to Unit 1
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+  // Quiz variables
+  let currentQuestion = 1;
+  const totalQuestions = 9;
+  let score = 0;
+  let questionsAnswered = Array(totalQuestions).fill(false);
+  
+  // Elements
+  const quizIntro = document.getElementById('quiz-intro');
+  const questionContainer = document.getElementById('question-container');
+  const quizResults = document.getElementById('quiz-results');
+  const startQuizBtn = document.getElementById('start-quiz-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const retryQuizBtn = document.getElementById('retry-quiz-btn');
+  const currentQuestionEl = document.getElementById('current-question');
+  const progressBar = document.getElementById('progress-bar');
+  const progressPercentage = document.getElementById('progress-percentage');
+  const finalScore = document.getElementById('final-score');
+  const correctFeedback = document.getElementById('correct-feedback');
+  const wrongFeedback = document.getElementById('wrong-feedback');
+  const motivationMessage = document.getElementById('motivation-message');
+  
+  // Motivation messages
+  const motivations = [
+    "Great job! Your understanding of physics is improving with every question!",
+    "Well done! Keep practicing and you'll master these concepts in no time!",
+    "You're making great progress! Physics can be challenging, but you're showing real determination!",
+    "Excellent work! Remember, even Einstein had to start somewhere!",
+    "Your hard work is paying off! Keep studying and you'll see even more improvement!",
+    "Fantastic effort! The more you practice, the stronger your physics skills become!",
+    "You're doing great! Every question you answer helps build your knowledge!",
+    "Awesome job! Physics is all about understanding the world around us, and you're getting there!",
+    "Keep up the good work! The journey to mastering physics is made of small steps like these!"
+  ];
+  
+  // Show a random motivation message
+  function showRandomMotivation() {
+    const randomIndex = Math.floor(Math.random() * motivations.length);
+    motivationMessage.innerHTML = `<p class="font-bold mb-2">Motivation:</p><p>${motivations[randomIndex]}</p>`;
+  }
+  
+  // Initialize drag and drop functionality
+  function initDragAndDrop() {
+    const dragItems = document.querySelectorAll('.drag-item');
+    const dropTargets = document.querySelectorAll('.drop-target');
+    
+    let draggedItem = null;
+    
+    dragItems.forEach(item => {
+      // Make items draggable
+      item.setAttribute('draggable', true);
+      
+      item.addEventListener('dragstart', function(e) {
+        draggedItem = this;
+        setTimeout(() => this.style.opacity = '0.5', 0);
+        e.dataTransfer.setData('text/plain', ''); // Required for Firefox
+      });
+      
+      item.addEventListener('dragend', function() {
+        this.style.opacity = '1';
+        dropTargets.forEach(target => target.classList.remove('active'));
+      });
+      
+      // Make items draggable by touch on mobile
+      item.addEventListener('touchstart', function(e) {
+        draggedItem = this;
+        this.style.opacity = '0.5';
+        
+        const touch = e.targetTouches[0];
+        const offsetX = touch.clientX - this.getBoundingClientRect().left;
+        const offsetY = touch.clientY - this.getBoundingClientRect().top;
+        
+        const touchMove = function(e) {
+          e.preventDefault();
+          const touchMove = e.targetTouches[0];
+          draggedItem.style.position = 'absolute';
+          draggedItem.style.left = touchMove.clientX - offsetX + 'px';
+          draggedItem.style.top = touchMove.clientY - offsetY + 'px';
+          
+          // Check if over drop target
+          dropTargets.forEach(target => {
+            const rect = target.getBoundingClientRect();
+            if (
+              touchMove.clientX > rect.left && 
+              touchMove.clientX < rect.right && 
+              touchMove.clientY > rect.top && 
+              touchMove.clientY < rect.bottom
+            ) {
+              target.classList.add('active');
+            } else {
+              target.classList.remove('active');
+            }
+          });
+        };
+        
+        const touchEnd = function(e) {
+          document.removeEventListener('touchmove', touchMove);
+          document.removeEventListener('touchend', touchEnd);
+          
+          draggedItem.style.opacity = '1';
+          
+          // Find the drop target under the touch point
+          const touch = e.changedTouches[0];
+          let dropTarget = null;
+          
+          dropTargets.forEach(target => {
+            const rect = target.getBoundingClientRect();
+            if (
+              touch.clientX > rect.left && 
+              touch.clientX < rect.right && 
+              touch.clientY > rect.top && 
+              touch.clientY < rect.bottom
+            ) {
+              dropTarget = target;
+            }
+            target.classList.remove('active');
+          });
+          
+          if (dropTarget && draggedItem) {
+            // Check if the drop is valid
+            const accepts = dropTarget.dataset.accepts;
+            const itemType = draggedItem.dataset.type || draggedItem.dataset.match;
+            
+            if (accepts === itemType) {
+              draggedItem.style.position = 'static';
+              draggedItem.style.left = 'auto';
+              draggedItem.style.top = 'auto';
+              dropTarget.appendChild(draggedItem);
+              checkDragDropComplete();
+            } else {
+              draggedItem.style.position = 'static';
+              draggedItem.style.left = 'auto';
+              draggedItem.style.top = 'auto';
+            }
+          } else {
+            draggedItem.style.position = 'static';
+            draggedItem.style.left = 'auto';
+            draggedItem.style.top = 'auto';
+          }
+        };
+        
+        document.addEventListener('touchmove', touchMove, { passive: false });
+        document.addEventListener('touchend', touchEnd);
+      });
+    });
+    
+    dropTargets.forEach(target => {
+      target.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('active');
+      });
+      
+      target.addEventListener('dragleave', function() {
+        this.classList.remove('active');
+      });
+      
+      target.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('active');
+        
+        if (draggedItem) {
+          // Check if the drop is valid
+          const accepts = this.dataset.accepts;
+          const itemType = draggedItem.dataset.type || draggedItem.dataset.match;
+          
+          if (accepts === itemType) {
+            this.appendChild(draggedItem);
+            checkDragDropComplete();
+          }
+        }
+      });
+    });
+  }
+  
+  // Check if all drag and drop items are placed correctly
+  function checkDragDropComplete() {
+    const currentQuestionElement = document.getElementById(`q${currentQuestion}`);
+    
+    // For vector vs scalar question (q1)
+    if (currentQuestion === 1) {
+      const vectorDrop = document.getElementById('vector-drop');
+      const scalarDrop = document.getElementById('scalar-drop');
+      
+      if (vectorDrop.children.length + scalarDrop.children.length === 6) {
+        // All items placed, check if correctly
+        const vectorItems = Array.from(vectorDrop.children);
+        const scalarItems = Array.from(scalarDrop.children);
+        
+        const allCorrect = vectorItems.every(item => item.dataset.type === 'vector') && 
+                          scalarItems.every(item => item.dataset.type === 'scalar');
+        
+        if (allCorrect) {
+          showCorrectFeedback();
+          questionsAnswered[currentQuestion - 1] = true;
+          score++;
+          enableNextButton();
+        } else {
+          showWrongFeedback();
+        }
+      }
+    }
+    
+    // For vector components question (q4)
+    else if (currentQuestion === 4) {
+      const xComponentDrop = document.getElementById('x-component-drop');
+      const yComponentDrop = document.getElementById('y-component-drop');
+      const magnitudeDrop = document.getElementById('magnitude-drop');
+      const angleDrop = document.getElementById('angle-drop');
+      
+      if (xComponentDrop.children.length + yComponentDrop.children.length + 
+          magnitudeDrop.children.length + angleDrop.children.length === 4) {
+        // All items placed, check if correctly
+        const allCorrect = 
+          (xComponentDrop.children.length === 1 && xComponentDrop.children[0].dataset.match === 'x-component') &&
+          (yComponentDrop.children.length === 1 && yComponentDrop.children[0].dataset.match === 'y-component') &&
+          (magnitudeDrop.children.length === 1 && magnitudeDrop.children[0].dataset.match === 'magnitude') &&
+          (angleDrop.children.length === 1 && angleDrop.children[0].dataset.match === 'angle');
+        
+        if (allCorrect) {
+          showCorrectFeedback();
+          questionsAnswered[currentQuestion - 1] = true;
+          score++;
+          enableNextButton();
+        } else {
+          showWrongFeedback();
+        }
+      }
+    }
+    
+    // For types of forces question (q6)
+    else if (currentQuestion === 6) {
+      const gravityDrop = document.getElementById('gravity-drop');
+      const normalDrop = document.getElementById('normal-drop');
+      const frictionDrop = document.getElementById('friction-drop');
+      const tensionDrop = document.getElementById('tension-drop');
+      
+      if (gravityDrop.children.length + normalDrop.children.length + 
+          frictionDrop.children.length + tensionDrop.children.length === 4) {
+        // All items placed, check if correctly
+        const allCorrect = 
+          (gravityDrop.children.length === 1 && gravityDrop.children[0].dataset.match === 'gravity') &&
+          (normalDrop.children.length === 1 && normalDrop.children[0].dataset.match === 'normal') &&
+          (frictionDrop.children.length === 1 && frictionDrop.children[0].dataset.match === 'friction') &&
+          (tensionDrop.children.length === 1 && tensionDrop.children[0].dataset.match === 'tension');
+        
+        if (allCorrect) {
+          showCorrectFeedback();
+          questionsAnswered[currentQuestion - 1] = true;
+          score++;
+          enableNextButton();
+        } else {
+          showWrongFeedback();
+        }
+      }
+    }
+    
+    // For mass vs weight question (q8)
+    else if (currentQuestion === 8) {
+      const massDrop = document.getElementById('mass-drop');
+      const weightDrop = document.getElementById('weight-drop');
+      
+      if (massDrop.children.length + weightDrop.children.length === 6) {
+        // All items placed, check if correctly
+        const massItems = Array.from(massDrop.children);
+        const weightItems = Array.from(weightDrop.children);
+        
+        const allCorrect = massItems.every(item => item.dataset.type === 'mass') && 
+                          weightItems.every(item => item.dataset.type === 'weight');
+        
+        if (allCorrect) {
+          showCorrectFeedback();
+          questionsAnswered[currentQuestion - 1] = true;
+          score++;
+          enableNextButton();
+        } else {
+          showWrongFeedback();
+        }
+      }
+    }
+  }
+  
+  // Initialize option selection for multiple choice questions
+  function initOptionSelection() {
+    const optionButtons = document.querySelectorAll(`#q${currentQuestion} .option-button`);
+    
+    optionButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const isCorrect = this.dataset.correct === 'true';
+        
+        // For formula questions (q2, q7)
+        if (currentQuestion === 2) {
+          document.getElementById('formula-blank').textContent = this.dataset.value;
+        } else if (currentQuestion === 7) {
+          document.getElementById('third-law-blank').textContent = this.dataset.value;
+        }
+        
+        if (isCorrect) {
+          showCorrectFeedback();
+          questionsAnswered[currentQuestion - 1] = true;
+          score++;
+          enableNextButton();
+        } else {
+          showWrongFeedback();
+        }
+      });
+    });
+  }
+  
+  // Show correct answer feedback
+  function showCorrectFeedback() {
+    correctFeedback.classList.remove('hidden');
+    wrongFeedback.classList.add('hidden');
+  }
+  
+  // Show wrong answer feedback
+  function showWrongFeedback() {
+    wrongFeedback.classList.remove('hidden');
+    correctFeedback.classList.add('hidden');
+  }
+  
+  // Hide all feedback
+  function hideFeedback() {
+    correctFeedback.classList.add('hidden');
+    wrongFeedback.classList.add('hidden');
+  }
+  
+  // Enable the next button
+  function enableNextButton() {
+    nextBtn.disabled = false;
+  }
+  
+  // Disable the next button
+  function disableNextButton() {
+    nextBtn.disabled = true;
+  }
+  
+  // Show the current question
+  function showQuestion(questionNumber) {
+    // Hide all questions
+    const questions = document.querySelectorAll('.question');
+    questions.forEach(q => q.classList.add('hidden'));
+    
+    // Show the current question
+    const currentQuestionElement = document.getElementById(`q${questionNumber}`);
+    if (currentQuestionElement) {
+      currentQuestionElement.classList.remove('hidden');
+    }
+    
+    // Update progress
+    currentQuestionEl.textContent = questionNumber;
+    const progress = (questionNumber / totalQuestions) * 100;
+    progressBar.style.width = `${progress}%`;
+    progressPercentage.textContent = `${Math.round(progress)}%`;
+    
+    // Enable/disable prev button
+    prevBtn.disabled = questionNumber === 1;
+    
+    // Set next button state based on if question is answered
+    if (questionsAnswered[questionNumber - 1]) {
+      enableNextButton();
+    } else {
+      disableNextButton();
+    }
+    
+    // Hide feedback
+    hideFeedback();
+    
+    // Initialize interactions based on question type
+    if (questionNumber === 1 || questionNumber === 4 || questionNumber === 6 || questionNumber === 8) {
+      initDragAndDrop();
+    } else {
+      initOptionSelection();
+    }
+  }
+  
+  // Show quiz results
+  function showResults() {
+    questionContainer.classList.add('hidden');
+    quizResults.classList.remove('hidden');
+    finalScore.textContent = score;
+    showRandomMotivation();
+  }
+  
+  // Event listeners
+  startQuizBtn.addEventListener('click', function() {
+    quizIntro.classList.add('hidden');
+    questionContainer.classList.remove('hidden');
+    showQuestion(currentQuestion);
+  });
+  
+  prevBtn.addEventListener('click', function() {
+    if (currentQuestion > 1) {
+      currentQuestion--;
+      showQuestion(currentQuestion);
+    }
+  });
+  
+  nextBtn.addEventListener('click', function() {
+    if (currentQuestion < totalQuestions) {
+      currentQuestion++;
+      showQuestion(currentQuestion);
+    } else {
+      // End of quiz
+      showResults();
+    }
+  });
+  
+  retryQuizBtn.addEventListener('click', function() {
+    // Reset quiz state
+    currentQuestion = 1;
+    score = 0;
+    questionsAnswered = Array(totalQuestions).fill(false);
+    
+    // Reset any drag-drop items
+    const dragItems = document.querySelectorAll('.drag-item');
+    const dragItemContainers = [
+      document.getElementById('drag-items'),
+      document.getElementById('formula-items'),
+      document.getElementById('force-items'),
+      document.getElementById('mass-weight-items')
+    ];
+    
+    dragItems.forEach(item => {
+      const type = item.dataset.type || item.dataset.match;
+      
+      if (type === 'scalar' || type === 'vector') {
+        dragItemContainers[0].appendChild(item);
+      } else if (type === 'x-component' || type === 'y-component' || type === 'magnitude' || type === 'angle') {
+        dragItemContainers[1].appendChild(item);
+      } else if (type === 'gravity' || type === 'normal' || type === 'friction' || type === 'tension') {
+        dragItemContainers[2].appendChild(item);
+      } else if (type === 'mass' || type === 'weight') {
+        dragItemContainers[3].appendChild(item);
+      }
+    });
+    
+    // Reset formula blanks
+    const formulaBlank = document.getElementById('formula-blank');
+    const thirdLawBlank = document.getElementById('third-law-blank');
+    if (formulaBlank) formulaBlank.textContent = '?';
+    if (thirdLawBlank) thirdLawBlank.textContent = '?';
+    
+    // Show first question
+    quizResults.classList.add('hidden');
+    questionContainer.classList.remove('hidden');
+    showQuestion(currentQuestion);
+  });
+  
+  // Initialize MathJax
+  if (typeof MathJax !== 'undefined') {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+  }
+});
+    </script>
+    </body>
+</html>

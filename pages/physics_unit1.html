@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 1: Mechanics - ePhepha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        displayAlign: "left"
+      });
+    </script>
+  </head>
+  <body class="bg-gray-50 text-gray-800 font-sans pb-20">
+    <header 
+        class="sticky top-0 bg-[#196725] text-white p-4 shadow-lg z-50 flex justify-between items-center transition-transform duration-300"
+        role="banner"
+    >
+      <div class="flex items-center">
+        <a href="physics.html" class="mr-3">
+          <i class="fas fa-arrow-left text-xl"></i>
+        </a>
+        <div>
+          <h1 class="text-xl font-bold flex items-center">⚡ Unit 1: Newton's Laws</h1>
+          <p class="text-sm opacity-80">Force and Newton's Laws</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="bg-blue-800 rounded-full w-10 h-10 flex items-center justify-center">
+          <i class="fas fa-bookmark"></i>
+        </button>
+        <button class="bg-blue-800 rounded-full w-10 h-10 flex items-center justify-center">
+          <i class="fas fa-share-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <nav class="bg-white shadow-md p-3 overflow-x-auto whitespace-nowrap">
+      <ul class="flex space-x-4">
+        <li><a href="#vectors" class="px-3 py-1 bg-blue-100 rounded-full text-blue-800 font-semibold">1.1 Vectors</a></li>
+        <li><a href="#force" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.2 Force</a></li>
+        <li><a href="#types" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.3 Types of Forces</a></li>
+        <li><a href="#diagrams" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.4 Force Diagrams</a></li>
+        <li><a href="#resultant" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.5 Resultant Force</a></li>
+        <li><a href="#first-law" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.6 First Law</a></li>
+        <li><a href="#velocity" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.7 Velocity & Acceleration</a></li>
+        <li><a href="#second-law" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.8 Second Law</a></li>
+        <li><a href="#third-law" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.9 Third Law</a></li>
+        <li><a href="#gravitation" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.10 Gravitation</a></li>
+        <li><a href="#mass-weight" class="px-3 py-1 hover:bg-gray-100 rounded-full">1.11 Mass vs Weight</a></li>
+      </ul>
+    </nav>
+
+    <main class="p-6 max-w-4xl mx-auto space-y-12" role="main">
+      <!-- Progress -->
+      <div class="flex justify-between text-sm text-gray-600 mb-2">
+        <span>Unit 1 Progress</span>
+        <span>20%</span>
+      </div>
+      <div class="bg-gray-200 rounded-full h-3 overflow-hidden mb-6">
+        <div class="bg-blue-600 h-full rounded-full" style="width: 20%"></div>
+      </div>
+
+      <!-- 1.1 Vectors -->
+      <section id="vectors" class="scroll-mt-24">
+        <div class="flex gap-3 items-center mb-4">
+          <span class="bg-blue-800 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">1.1</span>
+          <h2 class="text-2xl font-bold text-blue-800">Revision: Vectors</h2>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md p-6 space-y-6">
+          <div class="border-l-4 border-blue-600 pl-4 py-2 bg-blue-50">
+            <p class="font-semibold">Key Concept: A vector is a quantity that has both magnitude (size) and direction.</p>
+          </div>
+          
+          <p>Before we dive into Newton's Laws of Motion, it's crucial to understand vectors, as forces are vector quantities.</p>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-bold text-lg mb-2">Vector vs Scalar</h3>
+              <ul class="list-disc list-inside space-y-2">
+                <li><strong>Vector:</strong> Has both magnitude and direction (e.g., Force, velocity, displacement)</li>
+                <li><strong>Scalar:</strong> Has only magnitude (e.g., Mass, time, temperature)</li>
+              </ul>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <h3 class="font-bold text-lg mb-2">Examples</h3>
+              <p><strong>Vectors:</strong> 5 m/s <em>east</em>, 10 N <em>downward</em>, 3 m <em>north</em></p>
+              <p><strong>Scalars:</strong> 5 seconds, 10 kilograms, 35°C</p>
+            </div>
+          </div>
+          
+          <h3 class="font-bold text-lg mb-2">Vector Notation</h3>
+          <p>We represent vectors in different ways:</p>
+          <ul class="list-disc list-inside space-y-1">
+            <li>Bold letter: <strong>F</strong></li>
+            <li>Letter with arrow: $\vec{F}$</li>
+            <li>Components: $F_x$ and $F_y$</li>
+          </ul>
+          
+          <div class="bg-blue-50 p-4 rounded-lg mt-4">
+            <h3 class="font-bold text-lg mb-2">Vector Operations</h3>
+            
+            <h4 class="font-semibold mt-2">Vector Addition</h4>
+            <p>To add vectors, we add their components:</p>
+            <p>$\vec{C} = \vec{A} + \vec{B}$</p>
+            <p>$C_x = A_x + B_x$</p>
+            <p>$C_y = A_y + B_y$</p>
+            
+            <h4 class="font-semibold mt-4">Vector Subtraction</h4>
+            <p>$\vec{D} = \vec{A} - \vec{B}$</p>
+            <p>$D_x = A_x - B_x$</p>
+            <p>$D_y = A_y - B_y$</p>
+            
+            <h4 class="font-semibold mt-4">Multiplication by a Scalar</h4>
+            <p>$\vec{E} = k\vec{A}$</p>
+            <p>$E_x = kA_x$</p>
+            <p>$E_y = kA_y$</p>
+          </div>
+          
+          <div class="border border-gray-300 rounded-lg p-4">
+            <h3 class="font-bold text-lg mb-2">Vector Components</h3>
+            <p>Any vector can be broken down into x and y components:</p>
+            <p>For a vector $\vec{F}$ with magnitude F and angle θ:</p>
+            <p>$F_x = F\cos\theta$</p>
+            <p>$F_y = F\sin\theta$</p>
+            <p class="mt-2">The magnitude of the vector from components:</p>
+            <p>$|\vec{F}| = \sqrt{F_x^2 + F_y^2}$</p>
+            <p>Direction (angle): $\theta = \tan^{-1}(F_y/F_x)$</p>
+          </div>
+          
+          <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+            <h3 class="font-bold text-lg">Remember</h3>
+            <p>When solving physics problems involving forces, always pay attention to directions and use vector components to find resultant effects.</p>
+          </div>
+        </div>
+        
+        <!-- Interactive elements -->
+        <div class="mt-6 grid md:grid-cols-2 gap-4">
+          <button class="bg-blue-600 text-white rounded-lg p-4 flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
+            <i class="fas fa-play-circle text-2xl"></i>
+            <span>Watch Vector Tutorial Video</span>
+          </button>
+          
+          <button class="bg-green-600 text-white rounded-lg p-4 flex items-center justify-center gap-2 hover:bg-green-700 transition-colors">
+            <i class="fas fa-dumbbell text-2xl"></i>
+            <span>Practice Vector Problems</span>
+          </button>
+        </div>
+      </section>
+      
+      <!-- 1.2 What is Force? -->
+      <section id="force" class="scroll-mt-24">
+        <div class="flex gap-3 items-center mb-4">
+          <span class="bg-blue-800 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">1.2</span>
+          <h2 class="text-2xl font-bold text-blue-800">What is Force?</h2>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md p-6 space-y-6">
+          <div class="border-l-4 border-blue-600 pl-4 py-2 bg-blue-50">
+            <p class="font-semibold">Key Concept: Force is a push or pull that can cause an object to accelerate.</p>
+          </div>
+          
+          <p>Force is a fundamental concept in physics and is essential to understanding how objects move and interact.</p>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-bold text-lg mb-2">Definition</h3>
+              <p>A force is a vector quantity that causes:</p>
+              <ul class="list-disc list-inside space-y-1 mt-2">
+                <li>A stationary object to move</li>
+                <li>A moving object to change speed</li>
+                <li>A moving object to change direction</li>
+                <li>An object to deform (change shape)</li>
+              </ul>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <h3 class="font-bold text-lg mb-2">SI Unit of Force</h3>
+              <p>The SI unit of force is the <strong>newton (N)</strong></p>
+              <p class="mt-2">1 newton is the force needed to give a 1 kg mass an acceleration of 1 m/s²</p>
+              <p class="font-semibold mt-2">1 N = 1 kg·m/s²</p>
+            </div>
+          </div>
+          
+          <h3 class="font-bold text-lg mb-2">Characteristics of Force</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li><strong>Vector quantity:</strong> Has both magnitude and direction</li>
+            <li><strong>Contact vs Non-contact:</strong> Some forces require physical contact, others act at a distance</li>
+            <li><strong>Balanced vs Unbalanced:</strong> Determines whether an object accelerates</li>
+          </ul>
+          
+          <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+            <h3 class="font-bold text-lg">Important Note</h3>
+            <p>Force is not the same as energy or momentum. Force causes changes in momentum according to Newton's laws.</p>
+          </div>
+        </div>
+        
+        <!-- Interactive elements -->
+        <div class="mt-6 grid md:grid-cols-2 gap-4">
+          <button class="bg-blue-600 text-white rounded-lg p-4 flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
+            <i class="fas fa-play-circle text-2xl"></i>
+            <span>Watch Force Demonstration</span>
+          </button>
+          
+          <button class="bg-green-600 text-white rounded-lg p-4 flex items-center justify-center gap-2 hover:bg-green-700 transition-colors">
+            <i class="fas fa-dumbbell text-2xl"></i>
+            <span>Practice Force Calculations</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Next/Previous Navigation -->
+      <div class="flex justify-between mt-12">
+        <button disabled class="px-6 py-3 bg-gray-300 text-gray-600 rounded-lg flex items-center gap-2">
+          <i class="fas fa-arrow-left"></i>
+          <span>Previous Section</span>
+        </button>
+        
+        <button class="px-6 py-3 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
+          <span>Next: Types of Forces</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      
+      <!-- Quick Quiz -->
+      <div class="mt-12 bg-blue-800 text-white rounded-xl p-6">
+        <h3 class="text-xl font-bold mb-4">Quick Quiz: Test Your Knowledge</h3>
+        <a href="physics_quize.html">
+            <button class="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-bold transition-colors">
+            Check Answers
+          </button></a>   
+
+        </div>
+      </div>
+    </main>
+    <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
+      <a href="../index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+        <i class="fas fa-hamburger" ></i>
+        <span class="text-xs">Home</span>
+      </a>
+      <a href="league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+        <i class="fas fa-trophy" ></i>
+        <span class="text-xs">League</span>
+      </a>
+      <a href="practice.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+        <i class="fas fa-bolt" style="color: #FFEB3B;"></i>
+        <span class="text-xs">Practice</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+        <i class="fas fa-user"></i>
+        <span class="text-xs">Profile</span>
+      </a>
+      <a href="feed.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+        <i class="fas fa-bell"></i>
+        <span class="text-xs">Feed</span>
+      </a>
+    </footer>
+
+    <script>
+      // Simple interaction script
+      document.addEventListener('DOMContentLoaded', function() {
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('nav a');
+        
+        function updateNavHighlight() {
+          let currentSectionId = '';
+          let smallestDistance = Infinity;
+          
+          sections.forEach(section => {
+            const distance = Math.abs(section.getBoundingClientRect().top - 120);
+            if (distance < smallestDistance) {
+              smallestDistance = distance;
+              currentSectionId = section.id;
+            }
+          });
+          
+          navLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + currentSectionId) {
+              link.classList.add('bg-blue-100', 'text-blue-800', 'font-semibold');
+              link.classList.remove('hover:bg-gray-100');
+            } else {
+              link.classList.remove('bg-blue-100', 'text-blue-800', 'font-semibold');
+              link.classList.add('hover:bg-gray-100');
+            }
+          });
+        }
+        
+        window.addEventListener('scroll', updateNavHighlight);
+        updateNavHighlight();
+      });
+    </script>
+    <script>
+  let lastScroll = 0;
+  const header = document.querySelector('header');
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+
+    if (currentScroll <= 0) {
+      header.classList.remove('-translate-y-full');
+      return;
+    }
+
+    if (currentScroll > lastScroll) {
+      // Scrolling down
+      header.classList.add('-translate-y-full');
+    } else {
+      // Scrolling up
+      header.classList.remove('-translate-y-full');
+    }
+
+    lastScroll = currentScroll;
+  });
+</script>
+  </body>
+</html>
