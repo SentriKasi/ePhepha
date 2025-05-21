@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ePhepha - Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <style>
+    .header-hidden {
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    header {
+      transition: transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <header id="main-header" class="sticky top-0 bg-[#196725] text-white p-4 shadow-lg z-50">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center">🚀 ePhepha</h1>
+        <p class="text-sm opacity-80">Matric Power — Uplift your grades</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+          <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div>
+            <div class="text-xs opacity-80">Streak</div>
+            <div class="font-bold">7 days</div>
+          </div>
+        </div>
+        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+          <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div>
+            <div class="text-xs opacity-80">Points</div>
+            <div class="font-bold">1,250</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="bg-white p-4 shadow-sm flex items-center justify-between">
+    <h2 class="text-xl font-bold text-gray-800">Feed</h2>
+    <div class="flex gap-2">
+      <button class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+        <i class="fas fa-user-friends mr-1"></i>Following
+      </button>
+      <button class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+        <i class="fas fa-globe-africa mr-1"></i>Discover
+      </button>
+    </div>
+  </div>
+
+  <main class="max-w-xl mx-auto px-4 mt-2 pb-24">
+    <!-- Feed Items -->
+    
+    <!-- Top Achievement - McDonald's Winner -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4 border border-yellow-200">
+      <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 p-3 flex items-center gap-3">
+        <div class="h-14 w-14 bg-yellow-600 rounded-full flex items-center justify-center">
+          <i class="fas fa-trophy text-white text-xl"></i>
+        </div>
+        <div class="text-white">
+          <h3 class="font-bold">MAJOR ACHIEVEMENT! 🎉</h3>
+          <p class="text-sm opacity-90">McDonald's League Winner</p>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">N</span>
+          </div>
+          <div>
+            <div class="font-bold">Nomzamo Ndlovu</div>
+            <div class="text-xs text-gray-500">1 day ago</div>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-4">I made it! Top spot in the McDonald's League! 🍔 Thanks to everyone who helped me study for Mathematics. Free meals incoming!</p>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-heart text-red-500 mr-1"></i>
+              <span>124</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>47</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            <i class="fas fa-share-alt mr-1"></i>
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ePhepha Tip -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4 border border-blue-100">
+      <div class="bg-[#196725] p-4 flex items-center gap-3">
+        <div class="h-12 w-12 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl text-[#196725] font-bold">🚀</span>
+        </div>
+        <div class="text-white">
+          <h3 class="font-bold">ePhepha Study Tip</h3>
+          <p class="text-sm opacity-90">4 days ago</p>
+        </div>
+      </div>
+      <div class="p-4">
+        <p class="text-gray-800 mb-3">How does ePhepha determine what to teach? Introducing: ✨ The ePhepha Method ✨</p>
+        <p class="text-gray-600 text-sm mb-4">Our curriculum is designed by top educators from SA universities and follows the official IEB and CAPS requirements.</p>
+        <a href="#" class="text-blue-500 font-medium">Learn more about our teaching methods</a>
+      </div>
+    </div>
+
+    <!-- Regional Advancement -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">T</span>
+          </div>
+          <div>
+            <div class="font-bold">Thabo Mashaba</div>
+            <div class="text-xs text-gray-500">2 days ago</div>
+          </div>
+          <div class="ml-auto">
+            <button class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">
+              <i class="fas fa-user-plus mr-1"></i>Follow
+            </button>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-3">Just advanced to the Nkangala District League! 🎯 Physics revision is paying off!</p>
+        
+        <div class="bg-blue-50 p-3 rounded-lg mb-3 flex items-center">
+          <div class="bg-blue-600 h-10 w-10 rounded-full flex items-center justify-center text-white mr-3">
+            <i class="fas fa-medal"></i>
+          </div>
+          <div>
+            <div class="font-bold text-blue-800">Regional League Advancement</div>
+            <div class="text-sm text-blue-600">Top 5 in Witbank High School League</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-heart mr-1"></i>
+              <span>87</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>12</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            Congrats!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Study Group Formation -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">L</span>
+          </div>
+          <div>
+            <div class="font-bold">Lesedi Molefe</div>
+            <div class="text-xs text-gray-500">3 days ago</div>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-3">Starting a Life Sciences study group for the upcoming exams. Join me every Tuesday at 4pm! We're focusing on genetics this week. 🧬</p>
+        
+        <div class="bg-green-50 p-3 rounded-lg mb-3">
+          <div class="font-bold text-green-800 mb-1">Life Sciences Study Group</div>
+          <div class="text-sm text-green-700">5 people have joined</div>
+          <div class="mt-2">
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+              <i class="fas fa-users mr-1"></i> Join Group
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-heart mr-1"></i>
+              <span>42</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>8</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            <i class="fas fa-share-alt mr-1"></i>
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streak Achievement -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <div class="h-48 bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center">
+        <div class="text-center text-white">
+          <div class="text-5xl mb-2">🔥 30</div>
+          <div class="text-xl font-bold">DAY STREAK!</div>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">Z</span>
+          </div>
+          <div>
+            <div class="font-bold">Zweli Khumalo</div>
+            <div class="text-xs text-gray-500">4 days ago</div>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-3">30 days of consistent study! Never thought I could do it. Physics and Maths Lit are getting easier every day. 💪</p>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-red-500">
+              <i class="fas fa-heart mr-1"></i>
+              <span>156</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>23</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            Amazing!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Study Content Sharing -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">T</span>
+          </div>
+          <div>
+            <div class="font-bold">Thandeka Sibiya</div>
+            <div class="text-xs text-gray-500">5 days ago</div>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-3">Created these Math formula flashcards that helped me remember the trigonometry formulas. Feel free to use them! 📐</p>
+        
+        <div class="bg-gray-100 p-3 rounded-lg mb-3 flex items-center">
+          <div class="bg-blue-600 h-10 w-10 rounded-full flex items-center justify-center text-white mr-3">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <div>
+            <div class="font-bold">Trigonometry_Flashcards.pdf</div>
+            <div class="text-xs text-gray-500">Downloaded 47 times</div>
+          </div>
+          <button class="ml-auto bg-blue-600 text-white h-8 w-8 rounded-full flex items-center justify-center">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-heart mr-1"></i>
+              <span>74</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>19</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            <i class="fas fa-share-alt mr-1"></i>
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Shoutout -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <div class="h-12 w-12 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-3">
+            <span class="text-2xl font-bold text-gray-600">S</span>
+          </div>
+          <div>
+            <div class="font-bold">Sipho Nkosi</div>
+            <div class="text-xs text-gray-500">6 days ago</div>
+          </div>
+        </div>
+        
+        <p class="text-gray-800 mb-3">Huge shoutout to Ms. Dlamini for the English extra lessons! My essay writing has improved so much. 📝</p>
+        
+        <div class="bg-yellow-50 p-3 rounded-lg mb-3">
+          <div class="flex items-center">
+            <div class="bg-yellow-500 h-10 w-10 rounded-full flex items-center justify-center text-white mr-3">
+              <i class="fas fa-star"></i>
+            </div>
+            <div>
+              <div class="font-bold text-yellow-800">Teacher Appreciation</div>
+              <div class="text-sm text-yellow-700">Ms. Dlamini - English Department</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex gap-4">
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-heart mr-1"></i>
+              <span>62</span>
+            </button>
+            <button class="flex items-center text-gray-600">
+              <i class="fas fa-comment-alt mr-1"></i>
+              <span>15</span>
+            </button>
+          </div>
+          <button class="text-blue-600 font-medium text-sm">
+            <i class="fas fa-share-alt mr-1"></i>
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
+    <a href="index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-hamburger" style="color:rgb(181, 16, 181);"></i>
+      <span class="text-xs">Home</span>
+    </a>
+    <a href="league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-trophy" style="color: #f44336;"></i>
+      <span class="text-xs">League</span>
+    </a>
+    <a href="practice.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bolt" style="color: #FFEB3B;"></i>
+      <span class="text-xs">Practice</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-user" style="color: #f44336;"></i>
+      <span class="text-xs">Profile</span>
+    </a>
+    <a href="feed.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
+      <i class="fas fa-bell" style="color:#FFEB3B;"></i>
+      <span class="text-xs">Feed</span>
+    </a>
+  </footer>
+
+  <script>
+    // Script to hide header on scroll down and show on scroll up
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.getElementById('main-header');
+      let lastScrollTop = 0;
+      
+      window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Determine scroll direction
+        if (scrollTop > lastScrollTop) {
+          // Scrolling down
+          header.classList.add('header-hidden');
+        } else {
+          // Scrolling up
+          header.classList.remove('header-hidden');
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For mobile or negative scrolling
+      }, false);
+    });
+  </script>
+
+</body>
+</html>
