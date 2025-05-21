@@ -260,11 +260,11 @@
 
   <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
     <a href="../index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-hamburger" style="color:rgb(181, 16, 181);"></i>
+      <i class="fas fa-hamburger"></i>
       <span class="text-xs">Home</span>
     </a>
     <a href="league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-trophy" style="color: #f44336;"></i>
+      <i class="fas fa-trophy"></i>
       <span class="text-xs">League</span>
     </a>
     <a href="practice.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
@@ -272,14 +272,43 @@
       <span class="text-xs">Practice</span>
     </a>
     <a href="profile.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-user" style="color: #f44336;"></i>
+      <i class="fas fa-user"></i>
       <span class="text-xs">Profile</span>
     </a>
     <a href="feed.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-bell" style="color:#FFEB3B;"></i>
+      <i class="fas fa-bell"></i>
       <span class="text-xs">Feed</span>
     </a>
   </footer>
-
+<!-- Add this script right before the closing </body> tag in your physics.html file -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the Unit 1 section
+    const unit1Section = document.querySelector('section:nth-child(1)');
+    
+    // Make the Unit 1 section clickable to open the detailed page
+    if (unit1Section) {
+      unit1Section.classList.add('cursor-pointer');
+      unit1Section.addEventListener('click', function() {
+        window.location.href = 'physics_unit1.html';
+      });
+    }
+    
+    // Add click events to all "Completed" sections
+    const completedSections = document.querySelectorAll('section');
+    completedSections.forEach((section, index) => {
+      const statusSpan = section.querySelector('span');
+      if (statusSpan && statusSpan.textContent.trim() === 'Completed') {
+        section.classList.add('cursor-pointer');
+        section.addEventListener('click', function() {
+          // For now, only Unit 1 has a detailed page
+          if (index === 0) {
+            window.location.href = 'physics_unit1.html';
+          }
+        });
+      }
+    });
+  });
+</script>
 </body>
 </html>
