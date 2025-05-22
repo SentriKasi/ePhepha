@@ -397,8 +397,6 @@
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
-    <div id="main-home">
-    <img src="images/map.png" width="100%" />
   <!-- Scroll progress indicator -->
   <div class="scroll-indicator" id="scrollIndicator"></div>
 
@@ -799,35 +797,66 @@
       }, 1000);
     }
 
-    // Enhanced touch gestures for mobile
-    let touchStartY = 0;
-    let touchEndY = 0;
+// Enhanced touch gestures for mobile - FIXED VERSION
+let touchStartY = 0;
+let touchEndY = 0;
+let touchStartTime = 0;
+let isScrolling = false;
+let scrollTimeout;
 
-    document.addEventListener('touchstart', e => {
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
+document.addEventListener('touchstart', e => {
+  touchStartY = e.changedTouches[0].screenY;
+  touchStartTime = Date.now();
+  isScrolling = false;
+  
+  // Clear any existing scroll timeout
+  clearTimeout(scrollTimeout);
+}, { passive: true });
 
-    document.addEventListener('touchend', e => {
-      touchEndY = e.changedTouches[0].screenY;
-      handleSwipe();
-    }, { passive: true });
+document.addEventListener('touchmove', e => {
+  // User is actively scrolling
+  isScrolling = true;
+}, { passive: true });
 
-    function handleSwipe() {
-      const swipeThreshold = 50;
-      const menu = document.getElementById('subjectMenu');
-      
-      if (touchStartY - touchEndY > swipeThreshold) {
-        // Swipe up - open menu
-        if (!menu.classList.contains('active')) {
-          openSubjectMenu();
-        }
-      } else if (touchEndY - touchStartY > swipeThreshold) {
-        // Swipe down - close menu
-        if (menu.classList.contains('active')) {
-          closeSubjectMenu();
-        }
+document.addEventListener('touchend', e => {
+  touchEndY = e.changedTouches[0].screenY;
+  
+  // Set a timeout to reset scrolling state
+  scrollTimeout = setTimeout(() => {
+    isScrolling = false;
+  }, 100);
+  
+  handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+  const swipeThreshold = 80; // Increased threshold
+  const maxSwipeTime = 300; // Maximum time for a valid swipe (ms)
+  const menu = document.getElementById('subjectMenu');
+  const swipeDistance = Math.abs(touchStartY - touchEndY);
+  const swipeTime = Date.now() - touchStartTime;
+  
+  // Only process swipe if:
+  // 1. User is not actively scrolling
+  // 2. Swipe distance exceeds threshold
+  // 3. Swipe was quick enough (not a slow scroll)
+  // 4. User started swipe from bottom 20% of screen (for opening menu)
+  if (!isScrolling && swipeDistance > swipeThreshold && swipeTime < maxSwipeTime) {
+    const startFromBottom = touchStartY > window.innerHeight * 0.8;
+    
+    if (touchStartY - touchEndY > swipeThreshold && startFromBottom) {
+      // Swipe up from bottom - open menu
+      if (!menu.classList.contains('active')) {
+        openSubjectMenu();
+      }
+    } else if (touchEndY - touchStartY > swipeThreshold) {
+      // Swipe down - close menu (only if menu is open)
+      if (menu.classList.contains('active')) {
+        closeSubjectMenu();
       }
     }
+  }
+}
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
