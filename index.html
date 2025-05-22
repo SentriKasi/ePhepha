@@ -3,32 +3,402 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ePhepha - Matric Power</title>
+  <title>ePhepha - Physics Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
   <style>
+    /* Enhanced smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Improved header animations */
     .header-hidden {
       transform: translateY(-100%);
-      transition: transform 0.3s ease;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0.95;
     }
     
     header {
-      transition: transform 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .shimmer {
-      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite;
+    /* Enhanced unit circles with better animations */
+    .unit-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    
+
+    .unit-circle:hover {
+      transform: scale(1.1) translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .unit-circle.completed {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .unit-circle.completed::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: rotate(45deg);
+      animation: shimmer 3s infinite;
+    }
+
+    .unit-circle.completed:hover {
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+      transform: scale(1.15) translateY(-3px);
+    }
+
+    .unit-circle.current {
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+      animation: currentPulse 2s infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .unit-circle.current::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      animation: ripple 2s infinite;
+    }
+
+    .unit-circle.current:hover {
+      box-shadow: 0 8px 35px rgba(59, 130, 246, 0.7);
+      transform: scale(1.15) translateY(-3px);
+    }
+
+    .unit-circle.locked {
+      background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+      color: #9CA3AF;
+      transition: all 0.3s ease;
+    }
+
+    .unit-circle.locked:hover {
+      background: linear-gradient(135deg, #E5E7EB, #D1D5DB);
+      transform: scale(1.05) translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced keyframe animations */
+    @keyframes currentPulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+      }
+      50% { 
+        transform: scale(1.03);
+        box-shadow: 0 6px 25px rgba(59, 130, 246, 0.7);
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0.8);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+    }
+
     @keyframes shimmer {
-      0% {background-position: -200% 0;}
-      100% {background-position: 200% 0;}
+      0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+      }
+    }
+
+    /* Enhanced physics background */
+    .physics-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .physics-bg:hover {
+      transform: scale(1.02) translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .physics-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.3) 0%, transparent 50%);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(1deg); }
+    }
+
+    .unit-path {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(to bottom, #10B981, #E5E7EB);
+      z-index: 1;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Enhanced subject menu animations */
+    .subject-menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 100;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .subject-menu.active {
+      transform: translateY(0);
+    }
+
+    /* Enhanced subject cards with staggered animations */
+    .subject-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 12px 0;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 2px solid transparent;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subject-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      border-color: #3B82F6;
+    }
+
+    .subject-card:hover::after {
+      left: 100%;
+    }
+
+    .subject-card.physics {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .subject-card.physics:hover {
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .subject-card.life-sciences {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .subject-card.life-sciences:hover {
+      box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5);
+    }
+
+    .subject-card.mathematics {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .subject-card.mathematics:hover {
+      box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
+    }
+
+    /* Enhanced overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 99;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Enhanced menu handle */
+    .menu-handle {
+      width: 40px;
+      height: 4px;
+      background: #CBD5E1;
+      border-radius: 2px;
+      margin: 12px auto 20px;
+      transition: all 0.3s ease;
+    }
+
+    .subject-menu:hover .menu-handle {
+      background: #94A3B8;
+      transform: scaleX(1.2);
+    }
+
+    /* Enhanced footer with better hover effects */
+    footer a {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    footer a:hover {
+      transform: translateY(-2px);
+    }
+
+    footer a::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: #F59E0B;
+      transition: width 0.3s ease;
+    }
+
+    footer a:hover::after {
+      width: 20px;
+    }
+
+    /* Enhanced stats cards in header */
+    .stats-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stats-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Staggered animation for subject cards */
+    .subject-card:nth-child(1) { animation-delay: 0.1s; }
+    .subject-card:nth-child(2) { animation-delay: 0.2s; }
+    .subject-card:nth-child(3) { animation-delay: 0.3s; }
+    .subject-card:nth-child(4) { animation-delay: 0.4s; }
+    .subject-card:nth-child(5) { animation-delay: 0.5s; }
+    .subject-card:nth-child(6) { animation-delay: 0.6s; }
+
+    .subject-menu.active .subject-card {
+      animation: slideInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Enhanced unit titles with better typography */
+    .unit-title {
+      transition: all 0.3s ease;
+    }
+
+    .unit-circle:hover + .text-center .unit-title {
+      color: #3B82F6;
+      transform: translateY(-1px);
+    }
+
+    /* Loading animations */
+    .loading-pulse {
+      animation: pulse 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to { opacity: 0.5; }
+    }
+
+    /* Enhanced scroll indicators */
+    .scroll-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3B82F6, #10B981);
+      z-index: 1000;
+      transform-origin: left;
+      transition: transform 0.1s ease;
     }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
+  <!-- Scroll progress indicator -->
+  <div class="scroll-indicator" id="scrollIndicator"></div>
 
   <header id="main-header" class="sticky top-0 bg-[#196725] text-white p-4 shadow-lg z-50">
     <div class="flex justify-between items-center">
@@ -37,7 +407,7 @@
         <p class="text-sm opacity-80">Matric Power — Uplift your grades</p>
       </div>
       <div class="flex items-center gap-4">
-        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
           <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
             <i class="fas fa-fire"></i>
           </div>
@@ -46,7 +416,7 @@
             <div class="font-bold">7 days</div>
           </div>
         </div>
-        <div class="bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
           <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
             <i class="fas fa-brain"></i>
           </div>
@@ -59,351 +429,223 @@
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto px-4 mt-4 pb-24">
-    <!-- Welcome Banner -->
-    <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg mb-6">
-      <h2 class="text-xl font-bold mb-2">Awe fede! Welcome to ePhepha 🔥</h2>
-      <p class="text-sm opacity-90 mb-4">Your all-in-one platform for matric success, career guidance, and future planning.</p>
-      <div class="flex items-center bg-white bg-opacity-20 p-2 rounded-lg">
-        <i class="fas fa-search text-white opacity-70 mx-2"></i>
-        <input type="text" placeholder="Search for bursaries, tutors, or resources..." class="bg-transparent border-none text-white placeholder-white placeholder-opacity-70 w-full focus:outline-none text-sm">
+  <main class="max-w-xl mx-auto px-4 mt-4 pb-24 relative">
+    <!-- Clickable Physics Banner -->
+    <section class="physics-bg text-white p-6 rounded-2xl shadow-lg mb-6 relative z-10" onclick="openSubjectMenu()">
+      <h2 class="text-xl font-bold mb-2">PHYSICAL SCIENCES PAPER 1</h2>
+      <p class="text-lg font-semibold">LAST PUSH</p>
+      <div class="absolute top-4 right-4">
+        <i class="fas fa-chevron-up text-white opacity-60"></i>
       </div>
     </section>
 
-    <!-- Opportunities Highlight -->
-    <div class="bg-yellow-100 text-yellow-800 p-4 rounded-xl shadow-md flex items-center mb-6">
-      <div class="bg-yellow-200 rounded-full p-2 mr-3">
-        <i class="fas fa-lightbulb text-yellow-600"></i>
-      </div>
-      <div>
-        <p class="font-bold">New bursary alert!</p>
-        <p class="text-sm">NSFAS applications closing in 2 weeks. Don't miss out!</p>
-      </div>
-      <button class="ml-auto bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm">Apply</button>
-    </div>
-
-    <!-- Categories -->
-    <div class="grid grid-cols-2 gap-3 mb-6">
-      <a href="#" class="bg-blue-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-blue-700 transition">
-        <i class="fas fa-briefcase text-2xl mb-2"></i>
-        <span class="font-bold">Career Advice</span>
-      </a>
-      <a href="#" class="bg-purple-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-purple-700 transition">
-        <i class="fas fa-chalkboard-teacher text-2xl mb-2"></i>
-        <span class="font-bold">Find Tutors</span>
-      </a>
-      <a href="#" class="bg-green-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-green-700 transition">
-        <i class="fas fa-graduation-cap text-2xl mb-2"></i>
-        <span class="font-bold">Bursaries</span>
-      </a>
-      <a href="#" class="bg-red-600 text-white p-4 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-red-700 transition">
-        <i class="fas fa-video text-2xl mb-2"></i>
-        <span class="font-bold">Learning Videos</span>
-      </a>
-    </div>
-
-    <!-- Featured Career Post -->
-    <h2 class="text-lg font-bold mb-3 flex items-center">
-      <i class="fas fa-briefcase text-blue-600 mr-2"></i>Career Spotlight
-    </h2>
-    
-    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-      <div class="h-40 bg-blue-100 relative overflow-hidden">
-        <img src="/api/placeholder/600/240" alt="Engineering careers" class="w-full h-full object-cover"/>
-        <div class="absolute top-0 left-0 bg-blue-600 text-white px-3 py-1 rounded-br-lg font-bold text-sm">
-          HOT CAREER
+    <!-- Physics Units Path -->
+    <div class="relative min-h-[800px]">
+      <!-- Unit 1: Newton's Laws -->
+      <div class="relative z-10 mb-12">
+        <div class="unit-circle completed" onclick="startUnit(1)">
+          <i class="fas fa-apple-alt text-2xl"></i>
         </div>
-      </div>
-      <div class="p-4">
-        <h3 class="font-bold text-lg mb-1">Engineering: The Builders of Tomorrow</h3>
-        <p class="text-sm text-gray-600 mb-3">Discover how engineering shapes our world and the various paths you can take with your matric maths and science.</p>
-        <div class="flex justify-between items-center">
-          <span class="text-xs text-gray-500 flex items-center"><i class="fas fa-clock mr-1"></i> Posted 2 days ago</span>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm">Read More</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tutors Near Me -->
-    <h2 class="text-lg font-bold mb-3 flex items-center">
-      <i class="fas fa-chalkboard-teacher text-purple-600 mr-2"></i>Tutors Near You
-    </h2>
-    
-    <div class="overflow-x-auto">
-      <div class="flex gap-4 pb-2 min-w-full">
-        <!-- Tutor 1 -->
-        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 bg-purple-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
-              <span class="text-xl font-bold text-purple-600">M</span>
-            </div>
-            <div>
-              <h3 class="font-bold">Ms. Mthembu</h3>
-              <div class="flex text-yellow-400 text-xs">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-                <span class="text-gray-600 ml-1">(4.5)</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-600 mb-2">
-            <div><i class="fas fa-graduation-cap text-purple-500 mr-1"></i> Mathematics & Physics</div>
-            <div><i class="fas fa-map-marker-alt text-purple-500 mr-1"></i> Witbank (3km away)</div>
-          </div>
-          <button class="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-lg py-2 text-sm">Book Session</button>
-        </div>
-        
-        <!-- Tutor 2 -->
-        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 bg-green-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
-              <span class="text-xl font-bold text-green-600">T</span>
-            </div>
-            <div>
-              <h3 class="font-bold">Mr. Tlou</h3>
-              <div class="flex text-yellow-400 text-xs">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <span class="text-gray-600 ml-1">(5.0)</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-600 mb-2">
-            <div><i class="fas fa-graduation-cap text-green-500 mr-1"></i> English & History</div>
-            <div><i class="fas fa-map-marker-alt text-green-500 mr-1"></i> Middelburg (10km away)</div>
-          </div>
-          <button class="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 text-sm">Book Session</button>
-        </div>
-        
-        <!-- Tutor 3 -->
-        <div class="bg-white rounded-xl shadow-md p-4 min-w-52 flex-shrink-0">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 bg-blue-200 rounded-full overflow-hidden flex items-center justify-center mr-3">
-              <span class="text-xl font-bold text-blue-600">Z</span>
-            </div>
-            <div>
-              <h3 class="font-bold">Ms. Zuma</h3>
-              <div class="flex text-yellow-400 text-xs">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
-                <span class="text-gray-600 ml-1">(4.0)</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-xs text-gray-600 mb-2">
-            <div><i class="fas fa-graduation-cap text-blue-500 mr-1"></i> Life Sciences & Geography</div>
-            <div><i class="fas fa-map-marker-alt text-blue-500 mr-1"></i> Online Only</div>
-          </div>
-          <button class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm">Book Session</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="text-center my-3">
-      <a href="#" class="text-purple-600 font-semibold text-sm inline-flex items-center">
-        View all tutors near you <i class="fas fa-chevron-right ml-1 text-xs"></i>
-      </a>
-    </div>
-
-    <!-- Featured Video Lessons -->
-    <h2 class="text-lg font-bold mb-3 flex items-center mt-6">
-      <i class="fas fa-video text-red-600 mr-2"></i>Featured Video Lessons
-    </h2>
-    
-    <div class="overflow-x-auto">
-      <div class="flex gap-4 pb-2">
-        <!-- Video 1 -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
-<div class="h-52 bg-gray-200 relative rounded overflow-hidden shadow-md">
-            <iframe 
-              class="w-full h-full object-cover" 
-              src="https://youtube.com/embed/eVm063xmnow?si=ZsbWwV0T8z2ssYGO&rel=0" 
-              title="Newton's Laws Simplified"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-
-            <!-- Optional: Custom Play Button (hidden once iframe is used) -->
-            <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
-                <i class="fas fa-play text-white"></i>
-              </div>
-            </div> -->
-
-            <!-- Time badge (optional for aesthetics, but not needed with embedded videos) -->
-            <!-- <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
-              3:33
-            </div> -->
-          </div>
-
-          <div class="p-3">
-            <h3 class="font-bold text-sm">Math Symbols</h3>
-            <p class="text-xs text-gray-500">Maths • 2.5k views</p>
-          </div>
-        </div>
-        
-        <!-- Video 2 -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
-<div class="h-52 bg-gray-200 relative rounded overflow-hidden shadow-md">
-            <iframe 
-              class="w-full h-full object-cover" 
-              src="https://www.youtube.com/embed/JGO_zDWmkvk?si=SaQJsDFndCDtAxMp&rel=0" 
-              title="Newton's Laws Simplified"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-
-            <!-- Optional: Custom Play Button (hidden once iframe is used) -->
-            <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
-                <i class="fas fa-play text-white"></i>
-              </div>
-            </div> -->
-
-            <!-- Time badge (optional for aesthetics, but not needed with embedded videos) -->
-            <!-- <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
-              3:33
-            </div> -->
-          </div>
-
-          <div class="p-3">
-            <h3 class="font-bold text-sm">Newton's Laws Simplified</h3>
-            <p class="text-xs text-gray-500">Physics • 2.5k views</p>
-          </div>
-        </div>
-        
-        <!-- Video 3 -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden min-w-52 flex-shrink-0">
-          <div class="h-52 bg-gray-200 relative rounded overflow-hidden shadow-md">
-            <iframe 
-              class="w-full h-full object-cover" 
-              src="https://youtube.com/embed/evH0I7Coc54?si=hZ0nfD1l2NjIvaR0" 
-              title="Newton's Laws Simplified"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-
-            <!-- Optional: Custom Play Button (hidden once iframe is used) -->
-            <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div class="bg-red-600 bg-opacity-80 rounded-full h-10 w-10 flex items-center justify-center">
-                <i class="fas fa-play text-white"></i>
-              </div>
-            </div> -->
-
-            <!-- Time badge (optional for aesthetics, but not needed with embedded videos) -->
-            <!-- <div class="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 rounded">
-              3:33
-            </div> -->
-          </div>
-
-          <div class="p-3">
-            <h3 class="font-bold text-sm">What are stem cells?</h3>
-            <p class="text-xs text-gray-500">Life Science • 2.5k views</p>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Newton's Laws</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="text-center my-3">
-      <a href="#" class="text-red-600 font-semibold text-sm inline-flex items-center">
-        Browse all video lessons <i class="fas fa-chevron-right ml-1 text-xs"></i>
-      </a>
-    </div>
 
-    <!-- Bursaries & Opportunities -->
-    <h2 class="text-lg font-bold mb-3 flex items-center mt-6">
-      <i class="fas fa-graduation-cap text-green-600 mr-2"></i>Bursaries & Opportunities
-    </h2>
-    
-    <div class="space-y-3">
-      <!-- Bursary 1 -->
-      <div class="bg-white rounded-xl shadow-md p-4">
-        <div class="flex justify-between items-start">
-          <div class="flex items-start">
-            <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-              <i class="fas fa-university text-green-600 text-xl"></i>
-            </div>
-            <div>
-              <h3 class="font-bold">NSFAS Bursary 2025</h3>
-              <p class="text-xs text-gray-500">Government • Closing: 30 June 2025</p>
-            </div>
-          </div>
-          <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full font-bold">Urgent</span>
+      <!-- Unit 2: Projectile Motion -->
+      <div class="relative z-10 mb-12 ml-20">
+        <div class="unit-circle current" onclick="startUnit(2)">
+          <i class="fas fa-baseball-ball text-2xl"></i>
         </div>
-        <p class="text-sm text-gray-600 mt-2">Financial assistance for tertiary education covering tuition, accommodation, books and living allowance.</p>
-        <div class="flex mt-3 gap-2">
-          <button class="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 text-sm">Apply Now</button>
-          <button class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center">
-            <i class="fas fa-bookmark text-gray-600"></i>
-          </button>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Projectile Motion</h3>
+          <div class="text-xs text-gray-500 mt-1">0/5 completed</div>
         </div>
       </div>
-      
-      <!-- Bursary 2 -->
-      <div class="bg-white rounded-xl shadow-md p-4">
-        <div class="flex justify-between items-start">
-          <div class="flex items-start">
-            <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-              <i class="fas fa-building text-blue-600 text-xl"></i>
-            </div>
-            <div>
-              <h3 class="font-bold">Sasol Technical Bursary</h3>
-              <p class="text-xs text-gray-500">Corporate • Closing: 15 July 2025</p>
-            </div>
-          </div>
-          <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full font-bold">New</span>
+
+      <!-- Unit 3: Momentum & Impulse -->
+      <div class="relative z-10 mb-12">
+        <div class="unit-circle locked" onclick="startUnit(3)">
+          <i class="fas fa-car-crash text-2xl"></i>
         </div>
-        <p class="text-sm text-gray-600 mt-2">Full bursary for engineering and science students with strong maths and physical science marks.</p>
-        <div class="flex mt-3 gap-2">
-          <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm">Apply Now</button>
-          <button class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center">
-            <i class="fas fa-bookmark text-gray-600"></i>
-          </button>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Momentum & Impulse</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit 4: Work, Energy, Power -->
+      <div class="relative z-10 mb-12 ml-16">
+        <div class="unit-circle locked" onclick="startUnit(4)">
+          <i class="fas fa-battery-full text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Work, Energy, Power</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit 5: Doppler Effect -->
+      <div class="relative z-10 mb-12">
+        <div class="unit-circle locked" onclick="startUnit(5)">
+          <i class="fas fa-sound text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Doppler Effect</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit 6: Electrostatics -->
+      <div class="relative z-10 mb-12 ml-24">
+        <div class="unit-circle locked" onclick="startUnit(6)">
+          <i class="fas fa-bolt text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Electrostatics</h3>
+          <div class="text-xs text-gray-500 mt-1">Coulomb's Law & Electric Fields</div>
+        </div>
+      </div>
+
+      <!-- Unit 7: Circuits -->
+      <div class="relative z-10 mb-12">
+        <div class="unit-circle locked" onclick="startUnit(7)">
+          <i class="fas fa-microchip text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Circuits</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit 8: Electrodynamics -->
+      <div class="relative z-10 mb-12 ml-12">
+        <div class="unit-circle locked" onclick="startUnit(8)">
+          <i class="fas fa-magnet text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Electrodynamics</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit 9: Photoelectric Effect -->
+      <div class="relative z-10 mb-12">
+        <div class="unit-circle locked" onclick="startUnit(9)">
+          <i class="fas fa-lightbulb text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Photoelectric Effect</h3>
+          <div class="flex justify-center mt-1">
+            <i class="fas fa-lock text-gray-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treasure Chest -->
+      <div class="relative z-10 mb-12 ml-8">
+        <div class="unit-circle locked" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+          <i class="fas fa-treasure-chest text-2xl text-white"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="unit-title font-bold text-sm">Physics Master</h3>
+          <div class="text-xs text-gray-500 mt-1">Complete all units</div>
         </div>
       </div>
     </div>
-    
-    <div class="text-center my-3">
-      <a href="#" class="text-green-600 font-semibold text-sm inline-flex items-center">
-        View all bursaries <i class="fas fa-chevron-right ml-1 text-xs"></i>
-      </a>
-    </div>
-
-    <!-- Career Fair -->
-    <div class="mt-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-5 rounded-xl shadow-lg">
-      <div class="flex justify-between items-start">
-        <div>
-          <h3 class="font-bold text-lg">Virtual Career Fair 2025</h3>
-          <p class="text-sm opacity-80 mt-1">Meet 50+ companies and universities online.</p>
-          <div class="flex items-center mt-3">
-            <i class="fas fa-calendar-alt mr-1"></i>
-            <span class="text-sm">June 15-18, 2025</span>
-          </div>
-        </div>
-        <div class="shimmer bg-white bg-opacity-20 px-3 py-1 rounded-full font-bold">
-          Free Entry
-        </div>
-      </div>
-      <button class="w-full bg-white text-purple-600 font-bold rounded-lg py-2 mt-4 hover:bg-opacity-90">Register Now</button>
-    </div>
-
   </main>
 
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeSubjectMenu()"></div>
+
+  <!-- Subject Selection Menu -->
+  <div class="subject-menu" id="subjectMenu">
+    <div class="menu-handle"></div>
+    <div class="px-6 pb-8">
+      <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Choose Your Subject</h3>
+      
+      <!-- Physical Sciences -->
+      <div class="subject-card physics" onclick="selectSubject('physics-paper-1')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Physical Sciences Paper 1</h4>
+            <p class="text-sm opacity-80">Mechanics & Waves</p>
+          </div>
+          <i class="fas fa-atom text-2xl"></i>
+        </div>
+      </div>
+
+      <div class="subject-card physics" onclick="selectSubject('physics-paper-2')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Physical Sciences Paper 2</h4>
+            <p class="text-sm opacity-80">Chemistry & Matter</p>
+          </div>
+          <i class="fas fa-flask text-2xl"></i>
+        </div>
+      </div>
+
+      <!-- Life Sciences -->
+      <div class="subject-card life-sciences" onclick="selectSubject('life-sciences-paper-1')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Life Sciences Paper 1</h4>
+            <p class="text-sm opacity-80">Diversity & Ecology</p>
+          </div>
+          <i class="fas fa-leaf text-2xl"></i>
+        </div>
+      </div>
+
+      <div class="subject-card life-sciences" onclick="selectSubject('life-sciences-paper-2')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Life Sciences Paper 2</h4>
+            <p class="text-sm opacity-80">Life Processes</p>
+          </div>
+          <i class="fas fa-dna text-2xl"></i>
+        </div>
+      </div>
+
+      <!-- Mathematics -->
+      <div class="subject-card mathematics" onclick="selectSubject('mathematics-paper-1')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Mathematics Paper 1</h4>
+            <p class="text-sm opacity-80">Algebra & Functions</p>
+          </div>
+          <i class="fas fa-calculator text-2xl"></i>
+        </div>
+      </div>
+
+      <div class="subject-card mathematics" onclick="selectSubject('mathematics-paper-2')">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg">Mathematics Paper 2</h4>
+            <p class="text-sm opacity-80">Geometry & Trigonometry</p>
+          </div>
+          <i class="fas fa-drafting-compass text-2xl"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="fixed bottom-0 left-0 w-full bg-[#196725] text-white flex justify-around p-3 text-xl z-50 shadow-lg">
-    <a href="index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
-      <i class="fas fa-hamburger" style="color:rgb(181, 16, 181);"></i>
+    <a href="index.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors" >
+      <i class="fas fa-home" style="color:rgb(181, 16, 181);"></i>
       <span class="text-xs">Home</span>
     </a>
     <a href="pages/league.html" class="flex flex-col items-center hover:text-yellow-400 transition-colors">
@@ -425,15 +667,19 @@
   </footer>
 
   <script>
-    // Script to hide header on scroll down and show on scroll up
+    // Enhanced scroll progress indicator
+    window.addEventListener('scroll', function() {
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('scrollIndicator').style.transform = `scaleX(${scrolled / 100})`;
+    });
+
+    // Enhanced script to hide header on scroll down and show on scroll up
     document.addEventListener('DOMContentLoaded', function() {
       const header = document.getElementById('main-header');
       let lastScrollTop = 0;
+      let ticking = false;
       
-      window.addEventListener('scroll', function() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // Determine scroll direction
+      function updateHeader(scrollTop) {
         if (scrollTop > lastScrollTop && scrollTop > 50) {
           // Scrolling down
           header.classList.add('header-hidden');
@@ -441,11 +687,289 @@
           // Scrolling up
           header.classList.remove('header-hidden');
         }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        ticking = false;
+      }
+      
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(() => updateHeader(window.pageYOffset || document.documentElement.scrollTop));
+          ticking = true;
+        }
+      }, { passive: true });
+    });
+
+    // Enhanced unit start function with loading states
+    function startUnit(unitNumber) {
+      const unitCircle = event.target.closest('.unit-circle');
+      
+      // Add loading effect
+      unitCircle.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        unitCircle.style.transform = '';
+      }, 150);
+
+      // Only allow starting unlocked units
+      if (unitNumber === 1) {
+        showNotification('Unit already completed! ⭐⭐⭐', 'success');
+      } else if (unitNumber === 2) {
+        showNotification('Starting Projectile Motion unit...', 'info');
+        // Redirect to actual game/lesson with loading state
+        setTimeout(() => {
+          // window.location.href = 'unit-2.html';
+        }, 1500);
+      } else {
+        showNotification('Complete previous units to unlock this one! 🔒', 'warning');
+      }
+    }
+
+// Enhanced notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg transform translate-x-full transition-all duration-500 ease-out`;
+      
+      // Set colors based on type
+      const colors = {
+        success: 'bg-green-500 text-white',
+        error: 'bg-red-500 text-white',
+        warning: 'bg-yellow-500 text-white',
+        info: 'bg-blue-500 text-white'
+      };
+      
+      notification.className += ` ${colors[type] || colors.info}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Slide in
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+      
+      // Slide out and remove
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 500);
+      }, 3000);
+    }
+
+    // Enhanced subject menu functions
+    function openSubjectMenu() {
+      const menu = document.getElementById('subjectMenu');
+      const overlay = document.getElementById('overlay');
+      
+      menu.classList.add('active');
+      overlay.classList.add('active');
+      
+      // Prevent body scrolling
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSubjectMenu() {
+      const menu = document.getElementById('subjectMenu');
+      const overlay = document.getElementById('overlay');
+      
+      menu.classList.remove('active');
+      overlay.classList.remove('active');
+      
+      // Restore body scrolling
+      document.body.style.overflow = '';
+    }
+
+    // Enhanced subject selection
+    function selectSubject(subject) {
+      showNotification(`Switching to ${subject.replace('-', ' ').toUpperCase()}...`, 'info');
+      
+      // Add loading effect to selected card
+      const selectedCard = event.target.closest('.subject-card');
+      selectedCard.style.transform = 'scale(0.98)';
+      selectedCard.style.opacity = '0.8';
+      
+      setTimeout(() => {
+        closeSubjectMenu();
+        // Here you would typically navigate to the selected subject
+        // window.location.href = `subjects/${subject}.html`;
+        showNotification(`${subject.replace('-', ' ').toUpperCase()} loaded successfully!`, 'success');
+      }, 1000);
+    }
+
+    // Enhanced touch gestures for mobile
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    document.addEventListener('touchstart', e => {
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const menu = document.getElementById('subjectMenu');
+      
+      if (touchStartY - touchEndY > swipeThreshold) {
+        // Swipe up - open menu
+        if (!menu.classList.contains('active')) {
+          openSubjectMenu();
+        }
+      } else if (touchEndY - touchStartY > swipeThreshold) {
+        // Swipe down - close menu
+        if (menu.classList.contains('active')) {
+          closeSubjectMenu();
+        }
+      }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeSubjectMenu();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        const menu = document.getElementById('subjectMenu');
+        if (!menu.classList.contains('active')) {
+          e.preventDefault();
+          openSubjectMenu();
+        }
+      }
+    });
+
+    // Enhanced animations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate units on load
+      const units = document.querySelectorAll('.unit-circle');
+      units.forEach((unit, index) => {
+        unit.style.opacity = '0';
+        unit.style.transform = 'translateY(20px)';
         
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For mobile or negative scrolling
-      }, false);
+        setTimeout(() => {
+          unit.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          unit.style.opacity = '1';
+          unit.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+
+      // Animate physics banner
+      const banner = document.querySelector('.physics-bg');
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-20px)';
+      
+      setTimeout(() => {
+        banner.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        banner.style.opacity = '1';
+        banner.style.transform = 'translateY(0)';
+      }, 200);
+    });
+
+    // Performance optimization - throttle scroll events
+    function throttle(func, limit) {
+      let inThrottle;
+      return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+          func.apply(context, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      }
+    }
+
+    // Apply throttling to scroll events
+    const throttledScrollHandler = throttle(function() {
+      // Any heavy scroll operations can go here
+    }, 16); // ~60fps
+
+    window.addEventListener('scroll', throttledScrollHandler, { passive: true });
+
+    // Add ripple effect to clickable elements
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const circle = document.createElement('span');
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+      circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+      circle.classList.add('ripple-effect');
+      
+      const rippleStyle = document.createElement('style');
+      rippleStyle.textContent = `
+        .ripple-effect {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(0);
+          animation: ripple-animation 0.6s linear;
+          pointer-events: none;
+        }
+        @keyframes ripple-animation {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+      `;
+      
+      if (!document.head.querySelector('style[data-ripple]')) {
+        rippleStyle.setAttribute('data-ripple', 'true');
+        document.head.appendChild(rippleStyle);
+      }
+
+      const existingRipple = button.querySelector('.ripple-effect');
+      if (existingRipple) {
+        existingRipple.remove();
+      }
+
+      button.style.position = 'relative';
+      button.style.overflow = 'hidden';
+      button.appendChild(circle);
+
+      setTimeout(() => {
+        if (circle.parentNode) {
+          circle.parentNode.removeChild(circle);
+        }
+      }, 600);
+    }
+
+    // Add ripple effect to unit circles and subject cards
+    document.querySelectorAll('.unit-circle, .subject-card').forEach(element => {
+      element.addEventListener('click', createRipple);
+    });
+
+    // Service Worker registration for offline support (optional)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful');
+        }, function(err) {
+          console.log('ServiceWorker registration failed');
+        });
+      });
+    }
+
+    // Enhanced error handling
+    window.addEventListener('error', function(e) {
+      console.error('JavaScript error:', e.error);
+      showNotification('Oops! Something went wrong. Please refresh the page.', 'error');
+    });
+
+    // Performance monitoring
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const perfData = performance.getEntriesByType('navigation')[0];
+        if (perfData.loadEventEnd - perfData.loadEventStart > 3000) {
+          console.warn('Page load time is slow:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+        }
+      }, 0);
     });
   </script>
-
 </body>
 </html>
