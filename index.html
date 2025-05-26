@@ -407,22 +407,23 @@
         <p class="text-sm opacity-80">Matric Power — Uplift your grades</p>
       </div>
       <div class="flex items-center gap-4">
-        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
-          <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
-            <i class="fas fa-fire"></i>
+          <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+            <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div>
+              <div class="text-xs opacity-80">Streak</div>
+              <div class="font-bold"><span id="streak-count">0</span> days</div>
+            </div>
           </div>
-          <div>
-            <div class="text-xs opacity-80"></div>
-            <div class="font-bold">7</div>
-          </div>
-        </div>
-        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
-          <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div>
-            <div class="text-xs opacity-80"></div>
-            <div class="font-bold">1,250</div>
+          <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+            <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div>
+              <div class="text-xs opacity-80">Average</div>
+              <div class="font-bold"><span id="average-score">0</span>%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -667,6 +668,42 @@
   </footer>
 
   <script>
+    // User progress tracking
+let userStats = {
+  streakCount: 0,
+  averageScore: 0,
+  totalGames: 0,
+  totalScore: 0,
+  lastPlayDate: null,
+  dailyPlayed: false
+};
+
+// Update header display
+function updateHeaderStats() {
+  document.getElementById('streak-count').textContent = userStats.streakCount;
+  document.getElementById('average-score').textContent = Math.round(userStats.averageScore);
+}
+
+// Call when game is completed
+function onGameCompleted(score) {
+  // Update daily streak
+  const today = new Date().toDateString();
+  if (userStats.lastPlayDate !== today) {
+    if (!userStats.dailyPlayed) {
+      userStats.streakCount++;
+      userStats.dailyPlayed = true;
+      userStats.lastPlayDate = today;
+    }
+  }
+  
+  // Update average score
+  userStats.totalGames++;
+  userStats.totalScore += score;
+  userStats.averageScore = userStats.totalScore / userStats.totalGames;
+  
+  updateHeaderStats();
+  showNotification(`Great job! Score: ${score}% | Streak: ${userStats.streakCount} days`, 'success');
+}
     // Enhanced scroll progress indicator
     window.addEventListener('scroll', function() {
       const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
@@ -711,7 +748,11 @@
 
       // Only allow starting unlocked units
       if (unitNumber === 1) {
-        showNotification('Unit already completed! ⭐⭐⭐', 'success');
+        showNotification('Starting Newton\'s Laws unit...', 'info');
+        // Redirect to your Unit 1 game
+        setTimeout(() => {
+          window.location.href = 'unit1-game.html'; // Replace with your actual game file name
+        }, 1500);
       } else if (unitNumber === 2) {
         showNotification('Starting Projectile Motion unit...', 'info');
         // Redirect to actual game/lesson with loading state
@@ -896,6 +937,9 @@ function handleSwipe() {
         banner.style.opacity = '1';
         banner.style.transform = 'translateY(0)';
       }, 200);
+
+      // Initialize header stats display
+      updateHeaderStats();
     });
 
     // Performance optimization - throttle scroll events
