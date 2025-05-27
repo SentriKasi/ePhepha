@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Body Diagrams - Interactive Learning</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #196725 0%, #0d4f14 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+          .game-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            height: 80vh;
+            position: relative;
+            overflow: hidden;
+        }
+          .question-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #94a3b8 transparent;
+            max-height: 100%;
+        }
+        
+        .question-slide::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .question-slide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .question-slide::-webkit-scrollbar-thumb {
+            background-color: #94a3b8;
+            border-radius: 4px;
+        }
+        
+        .question-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .question-slide.prev {
+            transform: translateX(-100%);
+        }          .force-arrow {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: grab;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            user-select: none;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(59, 130, 246, 0.2);
+            border: 2px solid transparent;
+            text-align: center;
+            width: calc(50% - 24px); /* Make arrows take up half the width minus gap */
+            max-width: 200px;
+            min-width: 140px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0;
+            z-index: 30;
+            transform-origin: center;
+            position: relative;
+        }
+          .force-arrow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+        }
+        
+        .force-arrow:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .force-arrow.dragging {
+            transform: scale(1.05);
+            z-index: 1000;
+            opacity: 0.9;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .force-arrow.used {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+            transform: scale(0.95);
+            filter: grayscale(50%);
+        }
+          .force-slot {
+            width: 70px;
+            height: 70px;
+            border: 3px dashed #94a3b8;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05),
+                        inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 5;
+            backdrop-filter: blur(4px);
+        }
+        
+        .force-slot.drag-over {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.15);
+            transform: scale(1.15);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2),
+                        inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .force-slot.filled {
+            border-color: #10b981;
+            border-style: solid;
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.15),
+                        inset 0 2px 4px rgba(16, 185, 129, 0.1);
+        }
+        
+        .force-slot.correct {
+            border-color: #059669;
+            background: rgba(5, 150, 105, 0.2);
+            animation: correctPulse 0.8s ease;
+        }
+        
+        .force-slot.incorrect {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.2);
+            animation: incorrectShake 0.8s ease;
+        }
+        
+        .diagram-container {
+            position: relative;
+            background: rgba(248, 250, 252, 0.5);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .object-block {
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, #64748b, #475569);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .pulley-system {
+            position: relative;
+            width: 300px;
+            height: 200px;
+        }
+        
+        .pulley {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #374151;
+            border-radius: 50%;
+            background: #9ca3af;
+            position: absolute;
+            top: 0;
+            right: 50px;
+        }
+        
+        .rope {
+            width: 4px;
+            background: #92400e;
+            position: absolute;
+        }
+        
+        .rope.vertical {
+            height: 140px;
+            left: 80px;
+            top: 30px;
+        }
+        
+        .rope.horizontal {
+            width: 120px;
+            height: 4px;
+            top: 60px;
+            left: 40px;
+        }
+        
+        .block-a {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .block-b {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .elevator {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .pendulum {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .pendulum-string {
+            width: 2px;
+            height: 120px;
+            background: #374151;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(20deg);
+            transform-origin: top center;
+        }
+        
+        .pendulum-bob {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Force slot positions */
+        .slot-top { top: -50px; left: 50%; transform: translateX(-50%); }
+        .slot-bottom { bottom: -50px; left: 50%; transform: translateX(-50%); }
+        .slot-left { left: -50px; top: 50%; transform: translateY(-50%); }
+        .slot-right { right: -50px; top: 50%; transform: translateY(-50%); }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .btn-primary.hidden {
+            display: none;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #196725, #0d4f14);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(25, 103, 37, 0.3);
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(25, 103, 37, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981, #059669);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        
+        .feedback-correct {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            animation: slideInRight 0.5s ease;
+            margin-top: 20px;
+        }
+        
+        .feedback-incorrect {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            animation: slideInRight 0.5s ease;
+            margin-top: 20px;
+        }        .force-bank {
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            transition: transform 0.3s ease-out;
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+            transform: translateY(0);
+            opacity: 1 !important;
+            z-index: 10;
+            width: 100%;
+        }
+        
+        .force-bank .flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .score-summary {
+            background: linear-gradient(135deg, #196725, #0d4f14);
+            color: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .score-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .arrow-icon {
+            font-size: 12px;
+        }
+        
+        .scenario-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .spring {
+            width: 60px;
+            height: 6px;
+            background: repeating-linear-gradient(
+                to right,
+                #374151 0px,
+                #374151 4px,
+                transparent 4px,
+                transparent 8px
+            );
+            position: relative;
+        }
+        
+        .inclined-plane {
+            width: 200px;
+            height: 4px;
+            background: #374151;
+            transform: rotate(-30deg);
+            transform-origin: left bottom;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .firework {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            position: absolute;
+            animation: firework 1s ease-out forwards;
+        }
+
+        @keyframes firework {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(30);
+                opacity: 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <button onclick="goHome()" class="absolute top-6 left-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            
+            <button id="continueBtn" onclick="nextQuestion()" class="absolute top-6 right-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold opacity-50 cursor-not-allowed" disabled>
+                Continue <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            
+            <div class="flex items-center justify-center mb-6">
+                <div class="mr-6">
+                    <h1 class="text-4xl font-bold text-white mb-2">Free Body Diagrams</h1>
+                    <p class="text-white text-opacity-90">Interactive Force Analysis</p>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="max-w-md mx-auto mb-4">
+                <div class="flex justify-between text-white text-sm mb-2">
+                    <span>Question <span id="currentQuestion">1</span> of 9</span>
+                    <span id="progressPercent">11%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 11%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container">
+            <!-- Question 1: Block on Table -->
+            <div class="question-slide active" id="question1">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Block at Rest on a Table</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        Draw a free-body diagram for the block shown below. Drag the force arrows to their correct positions.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="object-block" id="block1">
+                        Block
+                        <div class="force-slot slot-top" data-correct="N" data-direction="up">↑</div>
+                        <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="f">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Friction (f)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="F">
+                            <i class="fas fa-arrow-right arrow-icon"></i> Applied (F)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback1" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 2: Block Being Pushed -->
+            <div class="question-slide" id="question2">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Block Being Pushed</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A force is applied to push the block to the right. Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="object-block" id="block2">
+                        Block
+                        <div class="force-slot slot-top" data-correct="N" data-direction="up">↑</div>
+                        <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                        <div class="force-slot slot-left" data-correct="f" data-direction="left">←</div>
+                        <div class="force-slot slot-right" data-correct="F" data-direction="right">→</div>
+                    </div>
+                </div>
+                  <div class="force-bank bg-white rounded-lg shadow-md p-4 mt-4">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="f">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Friction (f)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="F">
+                            <i class="fas fa-arrow-right arrow-icon"></i> Applied (F)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Tension (T)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback2" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 3: Pulley System Block A -->
+            <div class="question-slide" id="question3">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Pulley System - Block A</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        Complete the free-body diagram for Block A in the pulley system below.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="pulley-system">
+                        <div class="pulley"></div>
+                        <div class="rope vertical"></div>
+                        <div class="rope horizontal"></div>
+                        <div class="block-a" id="blockA">
+                            A
+                            <div class="force-slot slot-top" data-correct="T" data-direction="up">↑</div>
+                            <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                        </div>
+                        <div class="block-b">B</div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="f">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Friction (f)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Tension (T)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback3" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 4: Pulley System Block B -->
+            <div class="question-slide" id="question4">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Pulley System - Block B</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        Complete the free-body diagram for Block B in the pulley system below.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="pulley-system">
+                        <div class="pulley"></div>
+                        <div class="rope vertical"></div>
+                        <div class="rope horizontal"></div>
+                        <div class="block-a">A</div>
+                        <div class="block-b" id="blockB">
+                            B
+                            <div class="force-slot slot-top" data-correct="T" data-direction="up">↑</div>
+                            <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                            <div class="force-slot slot-left" data-correct="T2" data-direction="left">←</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Tension (T)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T2">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Tension (T)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback4" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 5: Block on Inclined Plane -->
+            <div class="question-slide" id="question5">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Block on Inclined Plane</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A block rests on an inclined plane. Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div style="position: relative; width: 200px; height: 150px; margin: 0 auto;">
+                        <div class="inclined-plane"></div>
+                        <div class="object-block" id="inclinedBlock" style="position: absolute; bottom: 40px; left: 60px; width: 80px; height: 60px; transform: rotate(-30deg);">
+                            Block
+                            <div class="force-slot" style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%) rotate(30deg);" data-correct="N" data-direction="perpendicular">⊥</div>
+                            <div class="force-slot" style="position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%) rotate(30deg);" data-correct="Fg" data-direction="down">↓</div>
+                            <div class="force-slot" style="position: absolute; right: -60px; top: 50%; transform: translateY(-50%) rotate(30deg);" data-correct="f" data-direction="parallel">∥</div>
+                        </div>
+                    </div>
+                </div>
+                  <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="f">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Friction (f)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback5" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 6: Elevator Moving Up -->
+            <div class="question-slide" id="question6">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Person in Accelerating Elevator</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A person stands in an elevator that is accelerating upward. Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="elevator" id="elevator">
+                        Person
+                        <div class="force-slot slot-top" data-correct="N" data-direction="up">↑</div>
+                        <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Tension (T)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback6" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 7: Pendulum -->
+            <div class="question-slide" id="question7">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Pendulum at Maximum Angle</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A pendulum bob is at its maximum displacement angle. Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="pendulum">
+                        <div class="pendulum-string"></div>
+                        <div class="pendulum-bob" id="pendulumBob">
+                            m
+                            <div class="force-slot" style="position: absolute; top: -60px; left: 10px; transform: rotate(-20deg);" data-correct="T" data-direction="string">T</div>
+                            <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="T">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Tension (T)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="F">
+                            <i class="fas fa-arrow-right arrow-icon"></i> Applied (F)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback7" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 8: Block with Spring -->
+            <div class="question-slide" id="question8">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Block Attached to Spring</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A block is attached to a compressed spring on a horizontal surface. Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                        <div class="spring"></div>
+                        <div class="object-block" id="springBlock">
+                            Block
+                            <div class="force-slot slot-top" data-correct="N" data-direction="up">↑</div>
+                            <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                            <div class="force-slot slot-left" data-correct="Fs" data-direction="left">←</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fs">
+                            <i class="fas fa-arrow-right arrow-icon"></i> Spring (Fs)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="f">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Friction (f)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback8" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Question 9: Projectile Motion -->
+            <div class="question-slide" id="question9">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Projectile in Flight</h2>
+                    <p class="text-lg text-gray-700 mb-4">
+                        A ball is in projectile motion (ignore air resistance). Complete the free-body diagram.
+                    </p>
+                </div>
+                
+                <div class="diagram-container">
+                    <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
+                        <div style="position: absolute; top: 50px; left: 100px; width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" id="projectile">
+                            Ball
+                            <div class="force-slot slot-bottom" data-correct="Fg" data-direction="down">↓</div>
+                        </div>
+                        <!-- Trajectory path -->
+                        <div style="position: absolute; top: 80px; left: 20px; width: 160px; height: 2px; background: #94a3b8; border-radius: 50px; transform: rotate(-20deg);"></div>
+                    </div>
+                </div>
+                
+                <div class="force-bank">
+                    <h3 class="font-bold text-lg mb-4 text-center">Available Forces</h3>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <div class="force-arrow" draggable="true" data-force="N">
+                            <i class="fas fa-arrow-up arrow-icon"></i> Normal (N)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fg">
+                            <i class="fas fa-arrow-down arrow-icon"></i> Weight (Fg)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="F">
+                            <i class="fas fa-arrow-right arrow-icon"></i> Applied (F)
+                        </div>
+                        <div class="force-arrow" draggable="true" data-force="Fair">
+                            <i class="fas fa-arrow-left arrow-icon"></i> Air Resistance
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div id="feedback9" class="text-center"></div>
+                </div>
+            </div>
+
+            <!-- Final Score Screen -->
+            <div class="question-slide" id="finalScore" style="display: none;">
+                <div class="score-summary">
+                    <div style="position: relative; z-index: 10;">
+                        <i class="fas fa-trophy text-6xl mb-4 text-yellow-300"></i>
+                        <h2 class="text-4xl font-bold mb-4">Quiz Complete!</h2>
+                        <div class="text-2xl mb-6">
+                            Your Score: <span id="finalScoreValue" class="font-bold">0</span>/9
+                        </div>
+                        <div class="text-lg mb-8" id="scoreMessage">Great job learning about free body diagrams!</div>
+                        
+                        <div class="flex justify-center gap-4 flex-wrap">
+                            <button onclick="restartQuiz()" class="btn-primary">
+                                <i class="fas fa-redo mr-2"></i>Try Again
+                            </button>
+                            <button onclick="goHome()" class="btn-primary">
+                                <i class="fas fa-home mr-2"></i>Back to Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameState = {
+            currentQuestion: 1,
+            score: 0,
+            maxQuestions: 9,
+            isDragging: false,
+            forceAnswers: {},
+            questionStatus: Array(9).fill(false) // Track completed questions
+        };
+
+        // Initialize question tracking
+        let currentQuestionIndex = 1;
+        const totalQuestions = 9;
+
+        // Drag and drop functionality
+        let draggedElement = null;        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            updateProgress();
+            
+            // Make sure the first question's force bank is visible
+            const firstForceBank = document.querySelector('#question1 .force-bank');
+            if (firstForceBank) {
+                firstForceBank.style.opacity = '1';
+            }
+            
+            // Make force arrows draggable
+            document.querySelectorAll('.force-arrow').forEach(arrow => {
+                arrow.draggable = true;
+                arrow.setAttribute('draggable', 'true');
+                
+                // Add drag event listeners
+                arrow.addEventListener('dragstart', handleDragStart);
+                arrow.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Initialize drop zones
+            document.querySelectorAll('.force-slot').forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragenter', handleDragEnter);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+            });
+        });function initializeDragAndDrop() {
+            const currentQuestion = document.getElementById(`question${currentQuestionIndex}`);
+            if (!currentQuestion) return;
+            
+            // Clear any existing event listeners from force arrows
+            currentQuestion.querySelectorAll('.force-arrow').forEach(arrow => {
+                const clonedArrow = arrow.cloneNode(true); // Clone to remove all listeners
+                arrow.parentNode.replaceChild(clonedArrow, arrow);
+                clonedArrow.draggable = true;
+                clonedArrow.classList.remove('used', 'dragging');
+                
+                // Add new event listeners
+                clonedArrow.addEventListener('dragstart', handleDragStart);
+                clonedArrow.addEventListener('dragend', handleDragEnd);
+                clonedArrow.addEventListener('mouseenter', () => {
+                    clonedArrow.style.transform = 'translateY(-2px)';
+                });
+                clonedArrow.addEventListener('mouseleave', () => {
+                    clonedArrow.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Reset and initialize force slots
+            currentQuestion.querySelectorAll('.force-slot').forEach(slot => {
+                const clonedSlot = slot.cloneNode(true); // Clone to remove all listeners
+                slot.parentNode.replaceChild(clonedSlot, slot);
+                clonedSlot.classList.remove('filled', 'correct', 'incorrect', 'drag-over');
+                clonedSlot.innerHTML = clonedSlot.dataset.direction === 'up' ? '↑' : 
+                                   clonedSlot.dataset.direction === 'down' ? '↓' : 
+                                   clonedSlot.dataset.direction === 'left' ? '←' : 
+                                   clonedSlot.dataset.direction === 'right' ? '→' :
+                                   clonedSlot.dataset.direction === 'perpendicular' ? '⊥' :
+                                   clonedSlot.dataset.direction === 'parallel' ? '∥' :
+                                   clonedSlot.dataset.direction === 'string' ? 'T' : '';
+                
+                // Add new event listeners to slot
+                clonedSlot.addEventListener('dragover', handleDragOver);
+                clonedSlot.addEventListener('dragenter', handleDragEnter);
+                clonedSlot.addEventListener('dragleave', handleDragLeave);
+                clonedSlot.addEventListener('drop', handleDrop);
+            });
+            
+            // Make sure the force bank is visible
+            const forceBank = currentQuestion.querySelector('.force-bank');
+            if (forceBank) {
+                forceBank.style.opacity = '1';
+                forceBank.style.transform = 'translateY(0)';
+            }
+        }        function handleDragStart(e) {
+            if (this.classList.contains('used')) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = this;
+            this.classList.add('dragging');
+            
+            // Set drag data
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.force);
+            
+            // Add visual feedback
+            requestAnimationFrame(() => {
+                this.style.transform = 'scale(1.05) translateY(-2px)';
+                this.style.boxShadow = '0 12px 24px rgba(59, 130, 246, 0.3)';
+                this.style.zIndex = '1000';
+            });
+            
+            // Hide other force arrows slightly
+            document.querySelectorAll('.force-arrow:not(.dragging)').forEach(arrow => {
+                arrow.style.opacity = '0.6';
+            });
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            this.style.transform = '';
+            this.style.boxShadow = '';
+            this.style.zIndex = '';
+            draggedElement = null;
+            
+            // Reset opacity of other force arrows
+            document.querySelectorAll('.force-arrow').forEach(arrow => {
+                arrow.style.opacity = '';
+            });
+        }        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            // Only show drop effect if the slot isn't already filled
+            if (!this.classList.contains('filled')) {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 8px 16px rgba(59, 130, 246, 0.2)';
+            }
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (!this.classList.contains('filled')) {
+                this.classList.add('drag-over');
+                // Add entrance animation
+                this.animate([
+                    { transform: 'scale(1)', boxShadow: '0 4px 8px rgba(59, 130, 246, 0.2)' },
+                    { transform: 'scale(1.15)', boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3)' }
+                ], {
+                    duration: 200,
+                    fill: 'forwards',
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                });
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+            // Reset animation
+            this.animate([
+                { transform: 'scale(1.15)', boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3)' },
+                { transform: 'scale(1)', boxShadow: '0 4px 8px rgba(59, 130, 246, 0.2)' }
+            ], {
+                duration: 200,
+                fill: 'forwards',
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            });
+        }        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.classList.remove('drag-over');
+            this.style.transform = '';
+
+            if (!draggedElement || this.classList.contains('filled')) {
+                return false;
+            }
+
+            const force = e.dataTransfer.getData('text/plain');
+            if (!force) {
+                return false;
+            }
+
+            // Create smooth transition for the force arrow
+            const dropAnimation = [
+                { transform: 'scale(1.15) translateY(-2px)', opacity: 0.8 },
+                { transform: 'scale(1) translateY(0)', opacity: 1 }
+            ];
+            
+            // Mark the slot as filled with animation
+            this.classList.add('filled');
+            this.innerHTML = draggedElement.innerHTML;
+            this.dataset.placedForce = force;
+            this.animate(dropAnimation, {
+                duration: 300,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            });
+            
+            // Mark the original force arrow as used with animation
+            draggedElement.classList.add('used');
+            draggedElement.animate([
+                { transform: 'scale(1)', opacity: 1 },
+                { transform: 'scale(0.95)', opacity: 0.5 }
+            ], {
+                duration: 300,
+                fill: 'forwards',
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            });
+
+            // Reset opacity of other force arrows
+            document.querySelectorAll('.force-arrow').forEach(arrow => {
+                arrow.style.opacity = '';
+            });
+
+            // Check if all slots are filled to trigger answer check
+            const questionNum = currentQuestionIndex;
+            const slots = document.querySelectorAll(`#question${questionNum} .force-slot`);
+            const allFilled = Array.from(slots).every(slot => slot.classList.contains('filled'));
+
+            if (allFilled) {
+                // Small delay to allow drop animation to complete
+                setTimeout(() => checkAnswer(questionNum), 300);
+            }
+
+            return false;
+        }
+
+        function checkAnswer(questionNum) {
+            const slots = document.querySelectorAll(`#question${questionNum} .force-slot`);
+            let correct = 0;
+            let total = 0;
+
+            slots.forEach(slot => {
+                if (slot.dataset.correct) {
+                    total++;
+                    if (slot.dataset.placedForce === slot.dataset.correct) {
+                        correct++;
+                        slot.classList.add('correct');
+                    } else {
+                        slot.classList.add('incorrect');
+                    }
+                }
+            });
+
+            const isCorrect = correct === total;
+            const feedbackDiv = document.getElementById(`feedback${questionNum}`);
+            const continueBtn = document.getElementById('continueBtn');
+
+            if (isCorrect) {
+                gameState.score++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-correct">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Excellent! You correctly identified all the forces.
+                    </div>
+                `;
+                // Show celebration and enable continue button
+                createCelebration();
+                
+                // Enable and style continue button
+                continueBtn.disabled = false;
+                continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                continueBtn.classList.add('hover:bg-opacity-30');
+                
+                // Disable further changes
+                const forceArrows = document.querySelectorAll(`#question${questionNum} .force-arrow`);
+                forceArrows.forEach(arrow => {
+                    arrow.draggable = false;
+                    arrow.classList.add('used');
+                });
+            } else {
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-incorrect">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        Not quite right. Try again! You got ${correct} out of ${total} forces correct.
+                    </div>
+                `;
+                // Disable continue button
+                continueBtn.disabled = true;
+                continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                continueBtn.classList.remove('hover:bg-opacity-30');
+                
+                // Reset incorrect answers
+                slots.forEach(slot => {
+                    if (slot.classList.contains('incorrect')) {
+                        slot.classList.remove('filled', 'incorrect');
+                        slot.innerHTML = slot.dataset.direction === 'up' ? '↑' : 
+                                       slot.dataset.direction === 'down' ? '↓' : 
+                                       slot.dataset.direction === 'left' ? '←' : '→';
+                        delete slot.dataset.placedForce;
+                    }
+                });
+            }
+        }        function nextQuestion() {
+            if (currentQuestionIndex >= totalQuestions) {
+                showResults();
+                return;
+            }
+
+            // Hide current question with transition
+            const currentQuestion = document.getElementById(`question${currentQuestionIndex}`);
+            if (currentQuestion) {
+                currentQuestion.style.opacity = '0';
+                currentQuestion.classList.remove('active');
+                currentQuestion.classList.add('prev');
+                
+                // Clean up current question
+                const currentForceBank = currentQuestion.querySelector('.force-bank');
+                if (currentForceBank) {
+                    currentForceBank.style.transform = 'translateY(20px)';
+                }
+            }
+
+            // Show next question with transition
+            currentQuestionIndex++;
+            const nextQuestion = document.getElementById(`question${currentQuestionIndex}`);
+            if (nextQuestion) {
+                // Prepare next question
+                nextQuestion.style.opacity = '0';
+                nextQuestion.style.transform = 'translateX(100%)';
+                nextQuestion.style.display = 'block';
+                
+                // Force a reflow to ensure transitions work
+                void nextQuestion.offsetWidth;
+                
+                // Animate in
+                requestAnimationFrame(() => {
+                    nextQuestion.style.opacity = '1';
+                    nextQuestion.style.transform = 'translateX(0)';
+                    nextQuestion.classList.add('active');
+                    
+                    // Initialize force bank with animation
+                    const forceBank = nextQuestion.querySelector('.force-bank');
+                    if (forceBank) {
+                        forceBank.style.transform = 'translateY(20px)';
+                        forceBank.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            forceBank.style.transform = 'translateY(0)';
+                            forceBank.style.opacity = '1';
+                        }, 300);
+                    }
+                });
+            }
+
+            // Reset continue button
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.disabled = true;
+            continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            continueBtn.classList.remove('hover:bg-opacity-30');
+
+            // Reset and initialize new question
+            setTimeout(() => {
+                initializeDragAndDrop();
+                updateProgress();
+            }, 300); // Wait for transitions to complete
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestionIndex / 9) * 100;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function resetForces(questionNum) {
+            // Reset all force arrows for the current question
+            const forceArrows = document.querySelectorAll(`#question${questionNum} .force-arrow`);
+            forceArrows.forEach(arrow => {
+                arrow.classList.remove('used');
+                arrow.draggable = true;
+            });
+
+            // Reset all force slots
+            const slots = document.querySelectorAll(`#question${questionNum} .force-slot`);
+            slots.forEach(slot => {
+                slot.classList.remove('filled', 'correct', 'incorrect');
+                if (slot.dataset.direction === 'up') slot.innerHTML = '↑';
+                else if (slot.dataset.direction === 'down') slot.innerHTML = '↓';
+                else if (slot.dataset.direction === 'left') slot.innerHTML = '←';
+                else if (slot.dataset.direction === 'right') slot.innerHTML = '→';
+                else if (slot.dataset.direction === 'perpendicular') slot.innerHTML = '⊥';
+                else if (slot.dataset.direction === 'parallel') slot.innerHTML = '∥';
+                else if (slot.dataset.direction === 'string') slot.innerHTML = 'T';
+                delete slot.dataset.placedForce;
+            });
+        }
+
+        function showResults() {
+            // Hide current question
+            document.getElementById(`question${currentQuestionIndex}`).classList.remove('active');
+
+            // Show final score
+            const finalScoreDiv = document.getElementById('finalScore');
+            finalScoreDiv.style.display = 'block';
+            finalScoreDiv.classList.add('active');
+            document.getElementById('finalScoreValue').textContent = gameState.score;
+            
+            let message = '';
+            const percentage = (gameState.score / totalQuestions) * 100;
+            
+            if (percentage >= 90) {
+                message = 'Outstanding! You have mastered free body diagrams!';
+            } else if (percentage >= 80) {
+                message = 'Great work! You have a solid understanding of forces.';
+            } else if (percentage >= 70) {
+                message = 'Good job! Keep practicing to improve your skills.';
+            } else {
+                message = 'Keep studying! Free body diagrams take practice to master.';
+            }
+            document.getElementById('scoreMessage').textContent = message;
+            completeGame();
+        }
+
+        function completeGame() {
+            const score = Math.round((gameState.score / totalQuestions) * 100);
+            
+            let userStats = JSON.parse(localStorage.getItem('userStats')) || {
+                streakCount: 0,
+                averageScore: 0,
+                totalGames: 0,
+                totalScore: 0,
+                lastPlayDate: null,
+                newtonsLaws: {
+                    gamesCompleted: 0,
+                    gameScores: []
+                }
+            };
+
+            // Update progress for second game
+            userStats.newtonsLaws.gamesCompleted = 2;
+            userStats.newtonsLaws.gameScores[1] = score;
+            
+            // Update general stats
+            userStats.totalGames++;
+            userStats.totalScore += score;
+            userStats.averageScore = Math.round(userStats.totalScore / userStats.totalGames);
+
+            // Update streak
+            const today = new Date().toDateString();
+            if (userStats.lastPlayDate !== today) {
+                userStats.streakCount++;
+                userStats.lastPlayDate = today;
+            }
+
+            localStorage.setItem('userStats', JSON.stringify(userStats));
+
+            showNotification("Game completed! Returning to home...", 'success');
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 2000);
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 1;
+            gameState.score = 0;
+            gameState.answers = {};
+
+            // Hide final score
+            document.getElementById('finalScore').classList.remove('active');
+            document.getElementById('finalScore').style.display = 'none';
+
+            // Reset all questions
+            for (let i = 1; i <= totalQuestions; i++) {
+                const question = document.getElementById(`question${i}`);
+                question.classList.remove('active', 'prev');
+                
+                // Reset buttons and feedback
+                const submitBtn = document.getElementById(`submit${i}`);
+                const nextBtn = document.getElementById(`next${i}`);
+                const feedbackDiv = document.getElementById(`feedback${i}`);
+                
+                if (submitBtn) {
+                    submitBtn.style.display = 'inline-block';
+                    submitBtn.disabled = false;
+                }
+                if (nextBtn) {
+                    nextBtn.style.display = 'none';
+                    nextBtn.disabled = true;
+                }
+                if (feedbackDiv) {
+                    feedbackDiv.innerHTML = '';
+                }
+                
+                resetForces(i);
+            }
+
+            // Show first question
+            document.getElementById('question1').classList.add('active');
+            updateProgress();
+        }
+
+        function goHome() {
+            if (confirm('Are you sure you want to leave? Your progress will be lost.')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg text-white text-lg font-semibold ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 
+                'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function createCelebration() {
+            // Create celebration container
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            document.body.appendChild(celebration);
+            
+            // Create fireworks
+            for (let i = 0; i < 12; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                firework.style.left = `${Math.random() * 100 - 50}px`;
+                firework.style.top = `${Math.random() * 100 - 50}px`;
+                celebration.appendChild(firework);
+            }
+            
+            // Remove celebration after animation
+            setTimeout(() => {
+                document.body.removeChild(celebration);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -407,22 +407,23 @@
         <p class="text-sm opacity-80">Matric Power — Uplift your grades</p>
       </div>
       <div class="flex items-center gap-4">
-        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
-          <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
-            <i class="fas fa-fire"></i>
+          <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+            <div class="bg-[#EB5510] rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div>
+              <div class="text-xs opacity-80">Streak</div>
+              <div class="font-bold"><span id="streak-count">0</span> days</div>
+            </div>
           </div>
-          <div>
-            <div class="text-xs opacity-80"></div>
-            <div class="font-bold">7</div>
-          </div>
-        </div>
-        <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
-          <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div>
-            <div class="text-xs opacity-80"></div>
-            <div class="font-bold">1,250</div>
+          <div class="stats-card bg-blue-800 rounded-lg px-3 py-2 flex items-center">
+            <div class="bg-green-400 rounded-full h-8 w-8 flex items-center justify-center text-blue-900 font-bold mr-2">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div>
+              <div class="text-xs opacity-80">Average</div>
+              <div class="font-bold"><span id="average-score">0</span>%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -448,10 +449,10 @@
         </div>
         <div class="text-center">
           <h3 class="unit-title font-bold text-sm">Newton's Laws</h3>
-          <div class="flex justify-center mt-1">
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
+          <div class="flex justify-center mt-1" id="newtons-stars">
+            <i class="fas fa-star text-gray-300 text-xs" id="star-1"></i>
+            <i class="fas fa-star text-gray-300 text-xs" id="star-2"></i>
+            <i class="fas fa-star text-gray-300 text-xs" id="star-3"></i>
           </div>
         </div>
       </div>
@@ -667,6 +668,80 @@
   </footer>
 
   <script>
+    // User progress tracking
+let userStats = {
+  streakCount: 0,
+  averageScore: 0,
+  totalGames: 0,
+  totalScore: 0,
+  lastPlayDate: null,
+  dailyPlayed: false,
+  // Add Newton's Laws progress tracking
+  newtonsLaws: {
+    gamesCompleted: 0, // 0-3 games completed
+    gameScores: [] // Array to store individual game scores
+  }
+};
+
+// Update header display
+function updateHeaderStats() {
+  document.getElementById('streak-count').textContent = userStats.streakCount;
+  document.getElementById('average-score').textContent = Math.round(userStats.averageScore);
+}
+// Update Newton's Laws stars based on games completed
+function updateNewtonsStars() {
+    const stars = ['star-1', 'star-2', 'star-3'];
+    const savedStats = JSON.parse(localStorage.getItem('userStats')) || {};
+    const completed = savedStats.newtonsLaws?.gamesCompleted || 0;
+    
+    stars.forEach((starId, index) => {
+        const star = document.getElementById(starId);
+        if (index < completed) {
+            star.className = 'fas fa-star text-yellow-400 text-xs';
+        } else {
+            star.className = 'fas fa-star text-gray-300 text-xs';
+        }
+    });
+}
+
+// Call when a Newton's Laws game is completed
+function onNewtonsGameCompleted(gameNumber, score) {
+  // Update Newton's Laws progress
+  if (gameNumber <= 3 && userStats.newtonsLaws.gamesCompleted < gameNumber) {
+    userStats.newtonsLaws.gamesCompleted = gameNumber;
+    userStats.newtonsLaws.gameScores[gameNumber - 1] = score;
+  }
+  
+  // Update overall game stats
+  onGameCompleted(score);
+  
+  // Update the stars display
+  updateNewtonsStars();
+  
+  showNotification(`Newton's Laws Game ${gameNumber} completed! ⭐`, 'success');
+}
+
+
+// Call when game is completed
+function onGameCompleted(score) {
+  // Update daily streak
+  const today = new Date().toDateString();
+  if (userStats.lastPlayDate !== today) {
+    if (!userStats.dailyPlayed) {
+      userStats.streakCount++;
+      userStats.dailyPlayed = true;
+      userStats.lastPlayDate = today;
+    }
+  }
+  
+  // Update average score
+  userStats.totalGames++;
+  userStats.totalScore += score;
+  userStats.averageScore = userStats.totalScore / userStats.totalGames;
+  
+  updateHeaderStats();
+  showNotification(`Great job! Score: ${score}% | Streak: ${userStats.streakCount} days`, 'success');
+}
     // Enhanced scroll progress indicator
     window.addEventListener('scroll', function() {
       const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
@@ -675,6 +750,14 @@
 
     // Enhanced script to hide header on scroll down and show on scroll up
     document.addEventListener('DOMContentLoaded', function() {
+      // Load saved stats
+      const savedStats = localStorage.getItem('userStats');
+      if (savedStats) {
+          userStats = JSON.parse(savedStats);
+          updateHeaderStats();
+          updateNewtonsStars();
+      }
+      
       const header = document.getElementById('main-header');
       let lastScrollTop = 0;
       let ticking = false;
@@ -709,19 +792,59 @@
         unitCircle.style.transform = '';
       }, 150);
 
-      // Only allow starting unlocked units
       if (unitNumber === 1) {
-        showNotification('Unit already completed! ⭐⭐⭐', 'success');
+        // Get current progress
+        const savedStats = JSON.parse(localStorage.getItem('userStats')) || {};
+        const gamesCompleted = savedStats.newtonsLaws?.gamesCompleted || 0;
+        
+        // Determine which Newton's Laws game to load
+        if (gamesCompleted === 0) {
+          showNotification("Loading Newton's Laws Game 1...", 'info');
+          setTimeout(() => {
+            window.location.href = 'pages/newtons-laws.html';
+          }, 1000);
+        } else if (gamesCompleted === 1) {
+          showNotification("Loading Newton's Laws Game 2...", 'info');
+          setTimeout(() => {
+            window.location.href = 'pages/newtons-laws2.html';
+          }, 1000);
+        } else if (gamesCompleted === 2) {
+          showNotification("Loading Newton's Laws Game 3...", 'info');
+          setTimeout(() => {
+            window.location.href = 'pages/newtons-laws3.html';
+          }, 1000);
+        } else {
+          showNotification("You've completed all Newton's Laws games! 🎉", 'success');
+        }
       } else if (unitNumber === 2) {
         showNotification('Starting Projectile Motion unit...', 'info');
-        // Redirect to actual game/lesson with loading state
         setTimeout(() => {
-          // window.location.href = 'unit-2.html';
+          window.location.href = 'pages/projectile-motion.html';
         }, 1500);
       } else {
         showNotification('Complete previous units to unlock this one! 🔒', 'warning');
       }
     }
+
+  
+  let menuHTML = '<div class="newtons-menu">';
+  games.forEach((game, index) => {
+    const gameNum = index + 1;
+    const isCompleted = userStats.newtonsLaws.gamesCompleted >= gameNum;
+    const status = isCompleted ? '⭐' : '🎮';
+    
+    menuHTML += `
+      <div class="game-option ${isCompleted ? 'completed' : ''}" onclick="startNewtonsGame(${gameNum})">
+        <span>${game} ${status}</span>
+      </div>
+    `;
+  });
+  menuHTML += '</div>';
+  
+  // You can implement this as a modal or redirect to a game selection page
+  showNotification(`Choose a Newton's Laws game to play!`, 'info');
+
+
 
 // Enhanced notification system
     function showNotification(message, type = 'info') {
@@ -896,6 +1019,12 @@ function handleSwipe() {
         banner.style.opacity = '1';
         banner.style.transform = 'translateY(0)';
       }, 200);
+
+      // Initialize header stats display
+      updateHeaderStats();
+
+      // Initialize the stars on page load
+      updateNewtonsStars();
     });
 
     // Performance optimization - throttle scroll events
