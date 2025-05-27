@@ -618,8 +618,7 @@
     if (currentQuestion === 1) {
       const vectorDrop = document.getElementById('vector-drop');
       const scalarDrop = document.getElementById('scalar-drop');
-      
-      if (vectorDrop.children.length + scalarDrop.children.length === 6) {
+        if (vectorDrop.children.length + scalarDrop.children.length === 6) {
         // All items placed, check if correctly
         const vectorItems = Array.from(vectorDrop.children);
         const scalarItems = Array.from(scalarDrop.children);
@@ -631,10 +630,11 @@
           showCorrectFeedback();
           questionsAnswered[currentQuestion - 1] = true;
           score++;
-          enableNextButton();
         } else {
           showWrongFeedback();
+          questionsAnswered[currentQuestion - 1] = false;
         }
+        enableNextButton(); // Allow proceeding regardless of answer
       }
     }
     
@@ -647,8 +647,7 @@
       
       if (xComponentDrop.children.length + yComponentDrop.children.length + 
           magnitudeDrop.children.length + angleDrop.children.length === 4) {
-        // All items placed, check if correctly
-        const allCorrect = 
+        // All items placed, check if correctly        const allCorrect = 
           (xComponentDrop.children.length === 1 && xComponentDrop.children[0].dataset.match === 'x-component') &&
           (yComponentDrop.children.length === 1 && yComponentDrop.children[0].dataset.match === 'y-component') &&
           (magnitudeDrop.children.length === 1 && magnitudeDrop.children[0].dataset.match === 'magnitude') &&
@@ -658,10 +657,11 @@
           showCorrectFeedback();
           questionsAnswered[currentQuestion - 1] = true;
           score++;
-          enableNextButton();
         } else {
           showWrongFeedback();
+          questionsAnswered[currentQuestion - 1] = false;
         }
+        enableNextButton(); // Allow proceeding regardless of answer
       }
     }
     
@@ -674,8 +674,7 @@
       
       if (gravityDrop.children.length + normalDrop.children.length + 
           frictionDrop.children.length + tensionDrop.children.length === 4) {
-        // All items placed, check if correctly
-        const allCorrect = 
+        // All items placed, check if correctly        const allCorrect = 
           (gravityDrop.children.length === 1 && gravityDrop.children[0].dataset.match === 'gravity') &&
           (normalDrop.children.length === 1 && normalDrop.children[0].dataset.match === 'normal') &&
           (frictionDrop.children.length === 1 && frictionDrop.children[0].dataset.match === 'friction') &&
@@ -685,10 +684,11 @@
           showCorrectFeedback();
           questionsAnswered[currentQuestion - 1] = true;
           score++;
-          enableNextButton();
         } else {
           showWrongFeedback();
+          questionsAnswered[currentQuestion - 1] = false;
         }
+        enableNextButton(); // Allow proceeding regardless of answer
       }
     }
     
@@ -696,8 +696,7 @@
     else if (currentQuestion === 8) {
       const massDrop = document.getElementById('mass-drop');
       const weightDrop = document.getElementById('weight-drop');
-      
-      if (massDrop.children.length + weightDrop.children.length === 6) {
+        if (massDrop.children.length + weightDrop.children.length === 6) {
         // All items placed, check if correctly
         const massItems = Array.from(massDrop.children);
         const weightItems = Array.from(weightDrop.children);
@@ -709,10 +708,11 @@
           showCorrectFeedback();
           questionsAnswered[currentQuestion - 1] = true;
           score++;
-          enableNextButton();
         } else {
           showWrongFeedback();
+          questionsAnswered[currentQuestion - 1] = false;
         }
+        enableNextButton(); // Allow proceeding regardless of answer
       }
     }
   }
@@ -731,15 +731,15 @@
         } else if (currentQuestion === 7) {
           document.getElementById('third-law-blank').textContent = this.dataset.value;
         }
-        
-        if (isCorrect) {
+          if (isCorrect) {
           showCorrectFeedback();
           questionsAnswered[currentQuestion - 1] = true;
           score++;
-          enableNextButton();
         } else {
           showWrongFeedback();
+          questionsAnswered[currentQuestion - 1] = false;
         }
+        enableNextButton(); // Allow proceeding regardless of answer
       });
     });
   }

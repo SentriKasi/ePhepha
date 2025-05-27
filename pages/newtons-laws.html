@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newton's Laws - Interactive Learning</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #196725 0%, #0d4f14 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .question-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .question-slide.prev {
+            transform: translateX(-100%);
+        }
+        
+        .drag-item {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            border: 2px solid transparent;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .drag-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .drag-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.9;
+        }
+        
+        .drop-zone {
+            min-width: 150px;
+            min-height: 60px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            background: rgba(248, 250, 252, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 8px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .drop-zone.filled {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+        }
+        
+        .drop-zone.correct {
+            border-color: #059669;
+            background: rgba(5, 150, 105, 0.2);
+            animation: correctPulse 0.8s ease;
+        }
+        
+        .drop-zone.incorrect {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.2);
+            animation: incorrectShake 0.8s ease;
+        }
+        
+        .choice-card {
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .choice-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+        }
+        
+        .choice-card:hover::before {
+            left: 100%;
+        }
+        
+        .choice-card.selected {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .choice-card.correct {
+            border-color: #059669;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            animation: correctPulse 0.8s ease;
+        }
+        
+        .choice-card.incorrect {
+            border-color: #dc2626;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            animation: incorrectShake 0.8s ease;
+        }
+        
+        .match-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-3px);
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+        
+        .match-card.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #196725, #0d4f14);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(25, 103, 37, 0.3);
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(25, 103, 37, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981, #059669);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        
+        .feedback-correct {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            animation: slideInRight 0.5s ease;
+            margin-top: 20px;
+        }
+        
+        .feedback-incorrect {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            animation: slideInRight 0.5s ease;
+            margin-top: 20px;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            pointer-events: none;
+        }
+        
+        .firework {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            position: absolute;
+            animation: firework 1s ease-out forwards;
+        }
+        
+        @keyframes firework {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .score-summary {
+            background: linear-gradient(135deg, #196725, #0d4f14);
+            color: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .score-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <button onclick="goHome()" class="absolute top-6 left-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            
+            <div class="flex items-center justify-center mb-6">
+                <div class="mr-6">
+                    <h1 class="text-4xl font-bold text-white mb-2">Newton's Laws</h1>
+                    <p class="text-white text-opacity-90">Interactive Learning Journey</p>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="max-w-md mx-auto mb-4">
+                <div class="flex justify-between text-white text-sm mb-2">
+                    <span>Question <span id="currentQuestion">1</span> of 9</span>
+                    <span id="progressPercent">11%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 11%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container">
+            <!-- Question 1: Fill in the blank -->
+            <div class="question-slide active" id="question1">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Complete the Statement</h2>
+                    <p class="text-xl text-gray-700 leading-relaxed">
+                        Newton's First Law states that an object will remain at rest or move in a straight line at constant speed unless acted upon by a(n) 
+                        <span class="drop-zone" id="drop1" data-answer="unbalanced force">Drop here</span>
+                    </p>
+                </div>
+                
+                <div class="flex justify-center gap-4 mb-8">
+                    <div class="drag-item" draggable="true" data-value="unbalanced force">Unbalanced Force</div>
+                    <div class="drag-item" draggable="true" data-value="balanced force">Balanced Force</div>
+                    <div class="drag-item" draggable="true" data-value="friction">Friction</div>
+                </div>
+                
+                <div id="feedback1" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next1" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 2: True/False -->
+            <div class="question-slide" id="question2">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">True or False?</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        "An object in motion will eventually stop on its own."
+                    </p>
+                    <div class="flex justify-center">
+                        <span class="drop-zone" id="drop2" data-answer="false">Drop your answer here</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-6 mb-8">
+                    <div class="drag-item" draggable="true" data-value="true">True</div>
+                    <div class="drag-item" draggable="true" data-value="false">False</div>
+                </div>
+                
+                <div id="feedback2" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next2" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 3: Multiple Choice -->
+            <div class="question-slide" id="question3">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Which Law Applies?</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        A soccer ball accelerates when kicked. This demonstrates which of Newton's laws?
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 3)">
+                        <h3 class="font-bold text-lg mb-2">First Law</h3>
+                        <p class="text-gray-600">Law of Inertia</p>
+                    </div>
+                    <div class="choice-card" data-answer="true" onclick="selectChoice(this, 3)">
+                        <h3 class="font-bold text-lg mb-2">Second Law</h3>
+                        <p class="text-gray-600">F = ma</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 3)">
+                        <h3 class="font-bold text-lg mb-2">Third Law</h3>
+                        <p class="text-gray-600">Action-Reaction</p>
+                    </div>
+                </div>
+                
+                <div id="feedback3" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next3" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 4: Match the scenarios -->
+            <div class="question-slide" id="question4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Match Each Law</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        Match Newton's Laws to their examples
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4 text-center">Examples</h3>
+                        <div class="space-y-3">
+                            <div class="match-card scenario" data-law="third" onclick="selectScenario(this, 4)">
+                                A rocket pushes gas down to lift up
+                            </div>
+                            <div class="match-card scenario" data-law="first" onclick="selectScenario(this, 4)">
+                                A book stays at rest on a table
+                            </div>
+                            <div class="match-card scenario" data-law="second" onclick="selectScenario(this, 4)">
+                                Pushing a cart makes it accelerate
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4 text-center">Laws</h3>
+                        <div class="space-y-3">
+                            <div class="match-card law" data-law="first" onclick="selectLaw(this, 4)">
+                                First Law (Inertia)
+                            </div>
+                            <div class="match-card law" data-law="second" onclick="selectLaw(this, 4)">
+                                Second Law (F=ma)
+                            </div>
+                            <div class="match-card law" data-law="third" onclick="selectLaw(this, 4)">
+                                Third Law (Action-Reaction)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="feedback4" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next4" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 5: Force calculation -->
+            <div class="question-slide" id="question5">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Calculate the Missing Value</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        If F = ma, and mass = 10 kg, acceleration = 5 m/s², what is the force?
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 5)">25 N</div>
+                    <div class="choice-card" data-answer="true" onclick="selectChoice(this, 5)">50 N</div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 5)">15 N</div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 5)">2 N</div>
+                </div>
+                
+                <div id="feedback5" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next5" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 6: Identify the violation -->
+            <div class="question-slide" id="question6">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Spot the Error</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        Which scenario violates Newton's Third Law?
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 6)">
+                        <p>A person walks by pushing back on the ground</p>
+                    </div>
+                    <div class="choice-card" data-answer="true" onclick="selectChoice(this, 6)">
+                        <p>A magician claims to levitate without any external force</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 6)">
+                        <p>A swimmer pushes water back to move forward</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 6)">
+                        <p>A bird flaps wings down to fly up</p>
+                    </div>
+                </div>
+                
+                <div id="feedback6" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next6" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+<!-- Question 7: Inertia example -->
+<div class="question-slide" id="question7">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Complete the Law</h2>
+        <p class="text-xl text-gray-700 leading-relaxed">
+            An object at 
+            <span class="drop-zone" id="drop7a" data-answer="rest">___</span>
+            will remain at 
+            <span class="drop-zone" id="drop7b" data-answer="rest">___</span>, 
+            and an object in 
+            <span class="drop-zone" id="drop7c" data-answer="motion">___</span>
+            will remain in motion.
+        </p>
+    </div>
+    
+    <div class="flex justify-center gap-4 mb-8 flex-wrap">
+        <div class="drag-item" draggable="true" data-value="rest">Rest</div>
+        <div class="drag-item" draggable="true" data-value="rest">Rest</div>
+        <div class="drag-item" draggable="true" data-value="motion">Motion</div>
+        <div class="drag-item" draggable="true" data-value="acceleration">Acceleration</div>
+        <div class="drag-item" draggable="true" data-value="force">Force</div>
+    </div>
+    
+    <div id="feedback7" class="text-center"></div>
+    
+    <div class="text-center mt-8">
+        <button id="next7" class="btn-primary" onclick="nextQuestion()" disabled>
+            Continue <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+    </div>
+</div>
+
+
+            <!-- Question 8: Real world application -->
+            <div class="question-slide" id="question8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Real World Application</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        Why do passengers lurch forward when a car suddenly stops?
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-4 mb-8">
+                    <div class="choice-card" data-answer="true" onclick="selectChoice(this, 8)">
+                        <p><strong>Inertia:</strong> Their bodies continue moving forward due to Newton's First Law</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 8)">
+                        <p><strong>Force:</strong> The car exerts a forward force on the passengers</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 8)">
+                        <p><strong>Acceleration:</strong> The passengers accelerate faster than the car</p>
+                    </div>
+                </div>
+                
+                <div id="feedback8" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next8" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Continue <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 9: Final challenge -->
+            <div class="question-slide" id="question9">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Final Challenge</h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        According to Newton's Second Law, what happens to acceleration if you double the force while keeping mass constant?
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 9)">
+                        <p>Acceleration stays the same</p>
+                    </div>
+                    <div class="choice-card" data-answer="true" onclick="selectChoice(this, 9)">
+                        <p>Acceleration doubles</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 9)">
+                        <p>Acceleration is halved</p>
+                    </div>
+                    <div class="choice-card" data-answer="false" onclick="selectChoice(this, 9)">
+                        <p>Acceleration becomes zero</p>
+                    </div>
+                </div>
+                
+                <div id="feedback9" class="text-center"></div>
+                
+                <div class="text-center mt-8">
+                    <button id="next9" class="btn-primary" onclick="showResults()" disabled>
+                        View Results <i class="fas fa-trophy ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="question-slide" id="results">
+                <div class="score-summary">
+                    <div class="relative z-10">
+                        <div class="text-8xl mb-6">🎉</div>
+                        <h2 class="text-4xl font-bold mb-4">Congratulations!</h2>
+                        <p class="text-xl mb-6">You've completed Newton's Laws!</p>
+                        <div class="text-6xl font-bold mb-4" id="finalScore">0/9</div>
+                        <div class="text-2xl mb-8" id="scoreMessage">Great job!</div>
+                        <button onclick="completeGame()" class="btn-primary text-xl px-8 py-4">
+                            <i class="fas fa-home mr-2"></i>Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentQuestion: 1,
+            score: 0,
+            answers: {},
+            draggedElement: null,
+            selectedScenario: null,
+            selectedLaw: null,
+            matchedPairs: []
+        };
+
+        // Initialize drag and drop
+        function initDragAndDrop() {
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            gameState.draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            if (gameState.draggedElement) {
+                const dropZone = e.target;
+                const draggedValue = gameState.draggedElement.dataset.value;
+                const expectedAnswer = dropZone.dataset.answer;
+                
+                // Place the dragged item in the drop zone
+                dropZone.textContent = gameState.draggedElement.textContent;
+                dropZone.classList.add('filled');
+                
+                // Hide the dragged item
+                gameState.draggedElement.style.opacity = '0.3';
+                gameState.draggedElement.style.pointerEvents = 'none';
+                
+                // Check if answer is correct
+                if (draggedValue === expectedAnswer) {
+                    dropZone.classList.add('correct');
+                    showFeedback(gameState.currentQuestion, true);
+                } else {
+                    dropZone.classList.add('incorrect');
+                    showFeedback(gameState.currentQuestion, false);
+                }
+                
+                // For multi-drop questions, check if all are filled
+                checkMultiDropCompletion();
+            }
+        }
+
+        function checkMultiDropCompletion() {
+            if (gameState.currentQuestion === 7) {
+                const drops = ['drop7a', 'drop7b', 'drop7c'];
+                const allFilled = drops.every(id => document.getElementById(id).classList.contains('filled'));
+                
+                if (allFilled) {
+                    const allCorrect = drops.every(id => document.getElementById(id).classList.contains('correct'));
+                    setTimeout(() => {
+                        showFeedback(7, allCorrect);
+                    }, 500);
+                }
+            }
+        }
+
+        function selectChoice(element, questionNum) {
+            // Remove previous selections
+            document.querySelectorAll(`#question${questionNum} .choice-card`).forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current choice
+            element.classList.add('selected');
+            
+            // Check answer
+            const isCorrect = element.dataset.answer === 'true';
+            
+            setTimeout(() => {
+                if (isCorrect) {
+                    element.classList.add('correct');
+                } else {
+                    element.classList.add('incorrect');
+                }
+                showFeedback(questionNum, isCorrect);
+            }, 300);
+        }
+
+        function selectScenario(element, questionNum) {
+            // Clear previous selection
+            document.querySelectorAll('.scenario').forEach(s => s.classList.remove('selected'));
+            document.querySelectorAll('.law').forEach(l => l.classList.remove('selected'));
+            
+            gameState.selectedScenario = element;
+            element.classList.add('selected');
+            
+            checkMatchCompletion();
+        }
+
+        function selectLaw(element, questionNum) {
+            if (!gameState.selectedScenario) return;
+            
+            const scenarioLaw = gameState.selectedScenario.dataset.law;
+            const selectedLaw = element.dataset.law;
+            
+            if (scenarioLaw === selectedLaw) {
+                // Correct match
+                gameState.selectedScenario.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
+                element.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
+                gameState.selectedScenario.style.pointerEvents = 'none';
+                element.style.pointerEvents = 'none';
+                
+                gameState.matchedPairs.push({scenario: gameState.selectedScenario, law: element});
+                
+                if (gameState.matchedPairs.length === 3) {
+                    setTimeout(() => showFeedback(4, true), 500);
+                }
+            } else {
+                // Incorrect match
+                gameState.selectedScenario.style.background = 'linear-gradient(135deg, #fee2e2, #fecaca)';
+                element.style.background = 'linear-gradient(135deg, #fee2e2, #fecaca)';
+                
+                setTimeout(() => {
+                    gameState.selectedScenario.style.background = '';
+                    element.style.background = '';
+                    showFeedback(4, false);
+                }, 800);
+            }
+            
+            // Clear selections
+            gameState.selectedScenario.classList.remove('selected');
+            element.classList.remove('selected');
+            gameState.selectedScenario = null;
+        }
+
+        function checkMatchCompletion() {
+            // This function is called when a scenario is selected
+            // The actual matching logic is in selectLaw
+        }
+
+        function showFeedback(questionNum, isCorrect) {
+            const feedbackDiv = document.getElementById(`feedback${questionNum}`);
+            const nextButton = document.getElementById(`next${questionNum}`);
+            
+            if (isCorrect) {
+                gameState.score++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-correct">
+                        <i class="fas fa-check-circle text-2xl mr-3"></i>
+                        <span class="text-lg font-semibold">Excellent! That's correct!</span>
+                    </div>
+                `;
+                createCelebration();
+            } else {
+                feedbackDiv.innerHTML = `
+                    <div class="feedback-incorrect">
+                        <i class="fas fa-times-circle text-2xl mr-3"></i>
+                        <span class="text-lg font-semibold">Not quite right. Try to remember the key concepts!</span>
+                    </div>
+                `;
+            }
+            
+            // Enable next button
+            if (nextButton) {
+                nextButton.disabled = false;
+            }
+        }
+
+        function createCelebration() {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            document.body.appendChild(celebration);
+            
+            // Create fireworks
+            for (let i = 0; i < 12; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                firework.style.left = `${Math.random() * 100 - 50}px`;
+                firework.style.top = `${Math.random() * 100 - 50}px`;
+                celebration.appendChild(firework);
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(celebration);
+            }, 1000);
+        }
+
+        function nextQuestion() {
+            // Hide current question
+            const currentSlide = document.getElementById(`question${gameState.currentQuestion}`);
+            currentSlide.classList.remove('active');
+            currentSlide.classList.add('prev');
+            
+            gameState.currentQuestion++;
+            updateProgress();
+            
+            // Show next question
+            setTimeout(() => {
+                const nextSlide = document.getElementById(`question${gameState.currentQuestion}`);
+                nextSlide.classList.add('active');
+                
+                // Reset drag and drop for new question
+                if (gameState.currentQuestion <= 9) {
+                    setTimeout(() => {
+                        initDragAndDrop();
+                    }, 100);
+                }
+            }, 300);
+        }
+
+        function updateProgress() {
+            const progress = (gameState.currentQuestion / 9) * 100;
+            document.getElementById('currentQuestion').textContent = gameState.currentQuestion;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResults() {
+            // Hide current question
+            const currentSlide = document.getElementById(`question${gameState.currentQuestion}`);
+            currentSlide.classList.remove('active');
+            currentSlide.classList.add('prev');
+            
+            // Show results
+            setTimeout(() => {
+                const resultsSlide = document.getElementById('results');
+                resultsSlide.classList.add('active');
+                
+                // Update final score
+                document.getElementById('finalScore').textContent = `${gameState.score}/9`;
+                
+                let message = '';
+                if (gameState.score === 9) {
+                    message = 'Perfect! You\'re a Newton\'s Laws master! 🏆';
+                } else if (gameState.score >= 7) {
+                    message = 'Excellent work! You really understand the concepts! ⭐';
+                } else if (gameState.score >= 5) {
+                    message = 'Good job! Keep studying to master these laws! 👍';
+                } else {
+                    message = 'Keep practicing! You\'ll get it with more study! 💪';
+                }
+                
+                document.getElementById('scoreMessage').textContent = message;
+                
+                // Create big celebration for high scores
+                if (gameState.score >= 7) {
+                    setTimeout(() => {
+                        for (let i = 0; i < 3; i++) {
+                            setTimeout(() => createCelebration(), i * 200);
+                        }
+                    }, 500);
+                }
+            }, 300);
+        }
+
+        function completeGame() {
+            // Calculate score percentage
+            const score = Math.round((gameState.score / 9) * 100);
+            
+            // Get existing stats from localStorage or initialize
+            let userStats = JSON.parse(localStorage.getItem('userStats')) || {
+                streakCount: 0,
+                averageScore: 0,
+                totalGames: 0,
+                totalScore: 0,
+                lastPlayDate: null,
+                dailyPlayed: false,
+                newtonsLaws: {
+                    gamesCompleted: 0,
+                    gameScores: []
+                }
+            };
+
+            // Update Newton's Laws specific progress
+            userStats.newtonsLaws.gamesCompleted = 1; // Set to 1 for first game completion
+            userStats.newtonsLaws.gameScores[0] = score; // Store score for first game
+
+            // Update general stats
+            userStats.totalGames++;
+            userStats.totalScore += score;
+            userStats.averageScore = Math.round(userStats.totalScore / userStats.totalGames);
+
+            // Update streak
+            const today = new Date().toDateString();
+            if (userStats.lastPlayDate !== today) {
+                userStats.streakCount++;
+                userStats.dailyPlayed = true;
+                userStats.lastPlayDate = today;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('userStats', JSON.stringify(userStats));
+
+            // Show completion message and redirect
+            showNotification("First Newton's Laws game completed! 🌟", 'success');
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1500);
+        }
+
+        function goHome() {
+            if (confirm('Are you sure you want to leave? Your progress will be lost.')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        function resetCurrentQuestion() {
+            // Reset drag items
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.style.opacity = '1';
+                item.style.pointerEvents = 'auto';
+            });
+            
+            // Reset drop zones
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.textContent = zone.dataset.answer ? 'Drop here' : 'Drop your answer here';
+                zone.className = 'drop-zone';
+            });
+            
+            // Reset choice cards
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.className = 'choice-card';
+            });
+            
+            // Reset match cards
+            document.querySelectorAll('.match-card').forEach(card => {
+                card.className = 'match-card';
+                card.style.background = '';
+                card.style.pointerEvents = 'auto';
+            });
+            
+            // Clear feedback
+            const feedbackDiv = document.getElementById(`feedback${gameState.currentQuestion}`);
+            if (feedbackDiv) {
+                feedbackDiv.innerHTML = '';
+            }
+            
+            // Disable next button
+            const nextButton = document.getElementById(`next${gameState.currentQuestion}`);
+            if (nextButton) {
+                nextButton.disabled = true;
+            }
+            
+            // Reset match game state
+            gameState.selectedScenario = null;
+            gameState.selectedLaw = null;
+            gameState.matchedPairs = [];
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateProgress();
+            
+            // Add reset button functionality (for testing)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'r' && e.ctrlKey) {
+                    e.preventDefault();
+                    resetCurrentQuestion();
+                }
+            });
+        });
+
+        // Add touch support for mobile drag and drop
+        let touchItem = null;
+
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('drag-item')) {
+                touchItem = e.target;
+                e.target.style.opacity = '0.8';
+            }
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (touchItem) {
+                const touch = e.changedTouches[0];
+                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                if (elementBelow && elementBelow.classList.contains('drop-zone')) {
+                    // Simulate drop
+                    const dropZone = elementBelow;
+                    const draggedValue = touchItem.dataset.value;
+                    const expectedAnswer = dropZone.dataset.answer;
+                    
+                    dropZone.textContent = touchItem.textContent;
+                    dropZone.classList.add('filled');
+                    touchItem.style.opacity = '0.3';
+                    touchItem.style.pointerEvents = 'none';
+                    
+                    if (draggedValue === expectedAnswer) {
+                        dropZone.classList.add('correct');
+                        showFeedback(gameState.currentQuestion, true);
+                    } else {
+                        dropZone.classList.add('incorrect');
+                        showFeedback(gameState.currentQuestion, false);
+                    }
+                    
+                    checkMultiDropCompletion();
+                } else {
+                    touchItem.style.opacity = '1';
+                }
+                
+                touchItem = null;
+            }
+        });
+    </script>
+</body>
+</html>
